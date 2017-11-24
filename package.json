@@ -1,0 +1,30 @@
+{
+  "name": "koa-server",
+  "version": "1.0.0",
+  "description": "mini server with koa",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pierroberto/koa-server.git"
+  },
+  "keywords": [
+    "koa"
+  ],
+  "author": "Pier Roberto Lucisano",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pierroberto/koa-server/issues"
+  },
+  "homepage": "https://github.com/pierroberto/koa-server#readme",
+  "dependencies": {
+    "koa": "^2.3.0",
+    "koa-bodyparser": "^4.2.0",
+    "koa-logger": "^3.1.0",
+    "koa-router": "^7.2.1",
+    "koa2-cors": "^2.0.3",
+    "mongoose": "^4.12.3"
+  }
+}
