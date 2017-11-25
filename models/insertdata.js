@@ -17,18 +17,23 @@ const UserSchema = mongoose.Schema({
 });
 
 const AdminSchema = mongoose.Schema({
-  theme:String,
-  logo:String
+  name:String,
+  email: String,
+  password:String,
+  logo:String,
+  weeklyAllow:Number,
+  coinName:String,
+  isAdmin:Boolean
 })
 
-const User = mongoose.model('Users', UserSchema);
+const Company = mongoose.model('Users', AdminSchema);
 
-function add(obj) {
+function addCompany(obj) {
   return new Promise((resolved, rejected) => {
-    const addUser = new User(obj)
-    addUser.save((err, letter) => {
+    const addCompany = new Company(obj)
+    addCompany.save((err, info) => {
       if (err) return rejected(err);
-      resolved('ok');
+      resolved(info);
     });
   });
 }
@@ -53,6 +58,6 @@ function remove(obj) {
 
 module.exports = {
   retrieveAll: retrieveAll,
-  add: add,
+  addCompany: addCompany,
   remove: remove
 }
