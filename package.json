@@ -21,8 +21,10 @@
   "homepage": "https://github.com/pierroberto/koa-server#readme",
   "dependencies": {
     "faker": "^4.1.0",
+    "jsonwebtoken": "^8.1.0",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
+    "koa-jwt": "^3.2.2",
     "koa-logger": "^3.1.0",
     "koa-router": "^7.2.1",
     "koa2-cors": "^2.0.3",

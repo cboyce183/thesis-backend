@@ -1,10 +1,4 @@
 const mongoose = require('mongoose');
-mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/MainRoot'); //to be replaced with the app name
-
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error'));
-db.once('open', () => { console.log('connected to the db...')})
 
 const UserSchema = mongoose.Schema({
   firstName: String,
@@ -23,41 +17,50 @@ const AdminSchema = mongoose.Schema({
   logo:String,
   weeklyAllow:Number,
   coinName:String,
-  isAdmin:Boolean
+  isAdmin:Boolean,
+  users:[UserSchema]
 })
 
-const Company = mongoose.model('Users', AdminSchema);
+const Company = mongoose.model('Companies', AdminSchema);
+const User = mongoose.model('Users', UserSchema);
 
-function addCompany(obj) {
-  return new Promise((resolved, rejected) => {
-    const addCompany = new Company(obj)
-    addCompany.save((err, info) => {
-      if (err) return rejected(err);
-      resolved(info);
-    });
-  });
+async function addCompany(obj) {
+  try {
+    const company = await Company.find({name: obj.name})
+    if (!company.length) {
+      const newCompany = new Company(obj)
+      await newCompany.save()
+      //await AdminSchema.findOneAndUpdate({name: obj.name},{users: obj.users.push({firstName: 'hello'})})
+      return true
+    } else
+      return false
+  } catch (e) {
+    throw e;
+  }
+
 }
 
 function retrieveAll() {
   return new Promise ((resolved, rejected) => {
-    User.find((err, users) => {
+    Company.find((err, companies) => {
       if (err) return rejected(err);
-      resolved(users);
+      resolved(companies);
     });
   });
 }
 
-function remove(obj) {
-  return new Promise ((resolved, rejected) => {
-    User.remove(obj, function (err) {
-      if (err) return rejected(err);
-      resolved('deleted');
-    });
-  })
-}
+// Template to remove either a user or a company
+// function remove(obj) {
+//   return new Promise ((resolved, rejected) => {
+//     User.remove(obj, function (err) {
+//       if (err) return rejected(err);
+//       resolved('deleted');
+//     });
+//   })
+// }
 
 module.exports = {
   retrieveAll: retrieveAll,
   addCompany: addCompany,
-  remove: remove
+  //remove: remove
 }
