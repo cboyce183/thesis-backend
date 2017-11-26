@@ -7,7 +7,7 @@ const UserSchema = mongoose.Schema({
   hashkey:String,
   admin:Boolean,
   availableCurrency:Number,
-  receivedCurrency:Number
+  receivedCurrency:Number,
 });
 
 const AdminSchema = mongoose.Schema({
