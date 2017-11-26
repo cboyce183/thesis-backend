@@ -6,9 +6,5 @@ module.exports = async function add (ctx) {
   if (data)
     ctx.status = 200;
   else
-    ctx.body = 'This company already exist';
+    ctx.body = 'This company already exists';
 }
-
-// module.exports = async function retrieve (ctx) {
-//   const list = await newCompany.retrieveAll()
-// }

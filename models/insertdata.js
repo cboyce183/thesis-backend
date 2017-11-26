@@ -1,66 +1,52 @@
 const mongoose = require('mongoose');
+const Schemas = require('./schemas')
 
-const UserSchema = mongoose.Schema({
-  firstName: String,
-  lastName: String,
-  password:String,
-  hashkey:String,
-  admin:Boolean,
-  availableCurrency:Number,
-  receivedCurrency:Number,
-});
 
-const AdminSchema = mongoose.Schema({
-  name:String,
-  email: String,
-  password:String,
-  logo:String,
-  weeklyAllow:Number,
-  coinName:String,
-  isAdmin:Boolean,
-  users:[UserSchema]
-})
 
-const Company = mongoose.model('Companies', AdminSchema);
-const User = mongoose.model('Users', UserSchema);
+//When I save a new user into userSchema, I need to store in the AdminSchema the id of the new UserSchema as well.
+//I have two collections: 1) database of users, 2) database of Companies
+//When a user logs in (sending his email address) I need to check whether he is an admin or a regular user.
+//To do so, I need to look into the company db first because it is smaller and then into the user db.
+
+
+const Company = mongoose.model('Companies', Schemas.AdminSchema);
+const User = mongoose.model('Users', Schemas.UserSchema);
+//await AdminSchema.findOneAndUpdate({name: obj.name},{users: obj.users.push({firstName: 'hello'})})
 
 async function addCompany(obj) {
+  console.log('obj', obj());
   try {
-    const company = await Company.find({name: obj.name})
+    const company = await Company.find({name: obj().name})
     if (!company.length) {
-      const newCompany = new Company(obj)
-      await newCompany.save()
-      //await AdminSchema.findOneAndUpdate({name: obj.name},{users: obj.users.push({firstName: 'hello'})})
-      return true
+      const newCompany = new Company(obj());
+      await newCompany.save();
+      return true;
     } else
-      return false
+      return false;
+  } catch (e) {
+    throw e;
+  }
+}
+
+async function addUser(obj) {
+  try {
+    // const company = await Company.find({company: obj.company})
+    // for (var userName in company) {
+    //   if (company[userName] === obj.firstName) {
+    //     return ctx.body = 'equals';
+    //   }
+    // }
+    const newUser = new User(obj);
+    await newUser.save();
+    return true
   } catch (e) {
     throw e;
   }
 
 }
 
-function retrieveAll() {
-  return new Promise ((resolved, rejected) => {
-    Company.find((err, companies) => {
-      if (err) return rejected(err);
-      resolved(companies);
-    });
-  });
-}
-
-// Template to remove either a user or a company
-// function remove(obj) {
-//   return new Promise ((resolved, rejected) => {
-//     User.remove(obj, function (err) {
-//       if (err) return rejected(err);
-//       resolved('deleted');
-//     });
-//   })
-// }
 
 module.exports = {
-  retrieveAll: retrieveAll,
   addCompany: addCompany,
-  //remove: remove
+  addUser: addUser
 }

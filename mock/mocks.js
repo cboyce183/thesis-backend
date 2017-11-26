@@ -1,25 +1,30 @@
 const faker = require('faker');
 
-const company = {
-  email: faker.internet.email(),
-  password: faker.internet.password(),
-  logo: faker.image.image(),
-  name: faker.company.companyName(),
-  weeklyAllow: faker.random.number(),
-  coinName: 'Zen',
-  isAdmin: faker.random.boolean()
+function company () {
+  return {
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    logo: faker.image.image(),
+    name: faker.company.companyName(),
+    hashkey: faker.random.number(),
+    weeklyAllow: faker.random.number(),
+    coinName: 'Zen',
+    isAdmin: true
+  }
 }
 
-const user = {
-  firstName: 'Paul',
-  lastName: faker.name.lastName(),
-  password: faker.internet.password(),
-  hashkey: faker.random.number(),
-  availableCurrency: faker.random.number(),
-  receivedCurrency: faker.random.number(),
-  company: 'Larson Group'
+function user () {
+  return {
+    firstName: 'Paul',
+    lastName: faker.name.lastName(),
+    password: faker.internet.password(),
+    hashkey: faker.random.number(),
+    availableCurrency: faker.random.number(),
+    receivedCurrency: faker.random.number(),
+    company: 'Larson Group',
+    isAdmin: false
+  }
 }
-
 module.exports = {
   company: company,
   user: user
