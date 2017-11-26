@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
-const Schemas = require('./schemas')
-
-
+const bcrypt = require('bcrypt');
+const Schemas = require('./schemas');
+const Company = mongoose.model('Companies', Schemas.AdminSchema);
+const User = mongoose.model('Users', Schemas.UserSchema);
 
 //When I save a new user into userSchema, I need to store in the AdminSchema the id of the new UserSchema as well.
 //I have two collections: 1) database of users, 2) database of Companies
@@ -9,16 +10,16 @@ const Schemas = require('./schemas')
 //To do so, I need to look into the company db first because it is smaller and then into the user db.
 
 
-const Company = mongoose.model('Companies', Schemas.AdminSchema);
-const User = mongoose.model('Users', Schemas.UserSchema);
 //await AdminSchema.findOneAndUpdate({name: obj.name},{users: obj.users.push({firstName: 'hello'})})
 
-async function addCompany(obj) {
-  console.log('obj', obj());
+async function addCompany (obj) {
   try {
     const company = await Company.find({name: obj().name})
     if (!company.length) {
       const newCompany = new Company(obj());
+      bcrypt.hash('obj().password', 10, function (err, hash) {
+        obj().password = hash;
+      })
       await newCompany.save();
       return true;
     } else
@@ -28,14 +29,8 @@ async function addCompany(obj) {
   }
 }
 
-async function addUser(obj) {
+async function addUser (obj) {
   try {
-    // const company = await Company.find({company: obj.company})
-    // for (var userName in company) {
-    //   if (company[userName] === obj.firstName) {
-    //     return ctx.body = 'equals';
-    //   }
-    // }
     const newUser = new User(obj);
     await newUser.save();
     return true
