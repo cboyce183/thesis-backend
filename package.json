@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/pierroberto/koa-server#readme",
   "dependencies": {
+    "atob": "^2.0.3",
     "bcrypt": "^1.0.3",
     "faker": "^4.1.0",
     "jsonwebtoken": "^8.1.0",
