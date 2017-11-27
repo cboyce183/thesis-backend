@@ -9,9 +9,6 @@ const User = mongoose.model('Users', Schemas.UserSchema);
 //When a user logs in (sending his email address) I need to check whether he is an admin or a regular user.
 //To do so, I need to look into the company db first because it is smaller and then into the user db.
 
-
-//await AdminSchema.findOneAndUpdate({name: obj.name},{users: obj.users.push({firstName: 'hello'})})
-
 async function addCompany (obj) {
   try {
     const company = await Company.find({name: obj().name})
