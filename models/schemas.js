@@ -5,7 +5,7 @@ const UserSchema = mongoose.Schema({
   lastName: String,
   password:String,
   hashkey:String,
-  admin:Boolean,
+  isAdmin:Boolean,
   availableCurrency:Number,
   receivedCurrency:Number,
 });
@@ -18,7 +18,7 @@ const AdminSchema = mongoose.Schema({
   weeklyAllow:Number,
   coinName:String,
   isAdmin:Boolean,
-  usersId:[Number]
+  usersId:[String]
 })
 
 module.exports = {

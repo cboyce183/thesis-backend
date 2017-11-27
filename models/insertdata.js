@@ -17,7 +17,7 @@ async function addCompany (obj) {
     const company = await Company.find({name: obj().name})
     if (!company.length) {
       const newCompany = new Company(obj());
-      bcrypt.hash('obj().password', 10, function (err, hash) {
+      bcrypt.hash(obj().password, 10, function (err, hash) {
         obj().password = hash;
       })
       await newCompany.save();
@@ -31,9 +31,31 @@ async function addCompany (obj) {
 
 async function addUser (obj) {
   try {
-    const newUser = new User(obj);
-    await newUser.save();
-    return true
+    const user = await User.find({email: obj().email})
+    //I check if the user exist in the user collection
+    if (!user.length) {
+      const newUser = new User(obj());
+      bcrypt.hash(obj().password, 10, function (err, hash) {
+        obj().password = hash;
+      })
+      //I first save the user in the user collection in order to get his id
+      await newUser.save();
+      let id;
+      //I search for the user just saved and I get his id
+      await User.findOne({firstName: obj().firstName}, '_id' , function (err, user) {
+        id = user.id
+      })
+      //I look for the company where we want the user to be added and I push his id
+      await Company.findOneAndUpdate({name: 'McClure - Buckridge'}, {}, function(err, company) {
+        //I update the value and save it
+        company.usersId.push(id)
+        const updateCompany = new Company(company)
+        updateCompany.save()
+      })
+
+      return true;
+    } else
+      return false;
   } catch (e) {
     throw e;
   }
