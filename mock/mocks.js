@@ -9,7 +9,8 @@ function company () {
     hashkey: faker.random.number(),
     weeklyAllow: faker.random.number(),
     coinName: 'Zen',
-    isAdmin: true
+    isAdmin: true,
+    createdOn: 1511879017142
   }
 }
 
@@ -17,16 +18,29 @@ function user () {
   return {
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
+    username: faker.internet.userName(),
     email: faker.internet.email(),
+    profilePic: faker.image.imageUrl(),
     password: 'hellouser',
     hashkey: faker.random.number(),
     availableCurrency: faker.random.number(),
     receivedCurrency: faker.random.number(),
     company: 'Larson Group',
-    isAdmin: false
+    isAdmin: false,
+    createdOn: 1511879017142
   }
 }
+
+function editUser () {
+  return {
+    password: 'hellouseredited',
+    profilePic: faker.image.imageUrl(),
+    username: faker.internet.userName()
+  }
+}
+
 module.exports = {
   company: company,
-  user: user
+  user: user,
+  editedUser: editUser
 }
