@@ -13,6 +13,7 @@ const UserSchema = mongoose.Schema({
   isAdmin:Boolean,
   availableCurrency:Number,
   receivedCurrency:Number,
+  company:String
 });
 
 const AdminSchema = mongoose.Schema({
