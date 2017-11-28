@@ -3,7 +3,7 @@ const faker = require('faker');
 function company () {
   return {
     email: faker.internet.email(),
-    password: faker.internet.password(),
+    password: 'hellocompany',
     logo: faker.image.image(),
     name: faker.company.companyName(),
     hashkey: faker.random.number(),
@@ -15,10 +15,10 @@ function company () {
 
 function user () {
   return {
-    firstName: 'Paul',
+    firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
-    password: 'hello',
+    password: 'hellouser',
     hashkey: faker.random.number(),
     availableCurrency: faker.random.number(),
     receivedCurrency: faker.random.number(),

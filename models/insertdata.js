@@ -11,14 +11,14 @@ const User = mongoose.model('Users', Schemas.UserSchema);
 
 async function addCompany (obj) {
   try {
-    const company = await Company.find({name: obj().name})
+    const company = await Company.find({name: obj().email})
     if (!company.length) {
       const newCompany = new Company(obj());
-      bcrypt.hash(obj().password, 10, function (err, hash) {
-        obj().password = hash;
-      })
-      await newCompany.save();
+      const hash = bcrypt.hashSync(obj().password, 10);
+      newCompany.password = hash;
+      newCompany.save();
       return true;
+
     } else
       return false;
   } catch (e) {

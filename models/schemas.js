@@ -7,7 +7,7 @@ const UserSchema = mongoose.Schema({
   email: {
     type: String,
     lowercase:true
-  }
+  },
   profilePic:String,
   hashkey:String,
   isAdmin:Boolean,
@@ -20,7 +20,7 @@ const AdminSchema = mongoose.Schema({
   email: {
     type: String,
     lowercase:true
-  }
+  },
   password:String,
   logo:String,
   weeklyAllow:Number,
