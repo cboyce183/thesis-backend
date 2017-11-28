@@ -4,6 +4,11 @@ const UserSchema = mongoose.Schema({
   firstName: String,
   lastName: String,
   password:String,
+  email: {
+    type: String,
+    lowercase:true
+  }
+  profilePic:String,
   hashkey:String,
   isAdmin:Boolean,
   availableCurrency:Number,
@@ -12,7 +17,10 @@ const UserSchema = mongoose.Schema({
 
 const AdminSchema = mongoose.Schema({
   name:String,
-  email: String,
+  email: {
+    type: String,
+    lowercase:true
+  }
   password:String,
   logo:String,
   weeklyAllow:Number,
@@ -21,7 +29,17 @@ const AdminSchema = mongoose.Schema({
   usersId:[String]
 })
 
+const CatalogSchema = mongoose.Schema({
+  name:String,
+  picture:String,
+  value:Number,
+  isService:Boolean,
+  schedule:Date
+
+})
+
 module.exports = {
   UserSchema : UserSchema,
-  AdminSchema: AdminSchema
+  AdminSchema: AdminSchema,
+  CatalogSchema: CatalogSchema
 }
