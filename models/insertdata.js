@@ -23,31 +23,21 @@ async function addCompany (obj) {
 
 async function addUser (obj) {
   try {
+
     const user = await User.find({email: obj().email})
     //I check if the user exist in the user collection
     if (!user.length) {
       const newUser = new User(obj());
-      bcrypt.hash(obj().password, 10, (err, hash) => {
+      const hash = bcrypt.hashSync(obj().password, 10);
         newUser.password = hash;
-
-        //I first save the user in the user collection in order to get his id
-        newUser.save();
-        let id;
-        //I search for the user just saved and I get his id
-        User.findOne({firstName: obj().email}, '_id' , function (err, user) {
-          id = user.id
-        })
+        await newUser.save();
+        const id = await User.findOne({email: newUser.email}, '_id');
         //I look for the company where we want the user to be added and I push his id
-        Company.findOneAndUpdate({company: obj().company}, {}, function(err, company) {
-          //I update the value and save it
-          company.usersId.push(id)
-          const updateCompany = new Company(company)
-          updateCompany.save()
-        })
-
-
-
-      })
+        const company = await Company.findOne({name: 'McClure - Buckridge'}, 'usersId'); //newUser.company
+        company.usersId.push(id);
+        const updatedCompany = new Company(company)
+        await updatedCompany.save();
+        console.log('company', company);
 
       return true;
     } else
@@ -55,11 +45,16 @@ async function addUser (obj) {
   } catch (e) {
     throw e;
   }
-
 }
-
+//
+// async function editUser (user) {
+//   const oldUserInfo = User.findOne({email: user.email});
+//   console.log('old user info', oldUserInfo);
+//
+// }
 
 module.exports = {
   addCompany: addCompany,
-  addUser: addUser
+  addUser: addUser,
+  //editUser: editUser
 }

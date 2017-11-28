@@ -13,7 +13,8 @@ const UserSchema = mongoose.Schema({
   isAdmin:Boolean,
   availableCurrency:Number,
   receivedCurrency:Number,
-  company:String
+  company:String,
+  createdOn:Number
 });
 
 const AdminSchema = mongoose.Schema({
@@ -27,7 +28,8 @@ const AdminSchema = mongoose.Schema({
   weeklyAllow:Number,
   coinName:String,
   isAdmin:Boolean,
-  usersId:[String]
+  usersId:[String],
+  createdOn:Number
 })
 
 const CatalogSchema = mongoose.Schema({
