@@ -18,7 +18,7 @@ function user () {
     firstName: 'Paul',
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),
+    password: 'hello',
     hashkey: faker.random.number(),
     availableCurrency: faker.random.number(),
     receivedCurrency: faker.random.number(),

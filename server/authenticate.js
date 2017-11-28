@@ -7,17 +7,32 @@ const bcrypt = require('bcrypt');
 const atob = require('atob');
 
 module.exports = async function (ctx) {
-    const userpass = (ctx.header.authorization.slice(6, ctx.header.authorization.length-2));
-    const username = atob(userpass).split(':')[0];
-    const password = atob(userpass).split(':')[1];
-    await Company.findOne({name: username}, 'password', function (err, person) {
-      const checkPass = bcrypt.compare(password, person.password)
-      if (checkPass) {
-        ctx.body = {
-          token: jwt.sign({password: ctx.headers.password }, 'xxx')
-        };
-        ctx.status = 200;
+    const userpass = atob(ctx.header.authorization.slice(6, ctx.header.authorization.length));
+    const email = userpass.split(':')[0];
+    const password = userpass.split(':')[1];
+    const person = await User.findOne({email: email}, 'password');
+      //If there is not any user, I check in the company db
+      if (!person) {
+          const company = await Company.findOne({email: email}, 'password')
+            if(!company) {
+              ctx.status = 401;
+              return ctx.body = 'Email not found';
+            }
+            const checkPass = bcrypt.compare(password, company.password)
+            ctx.body = await sign(checkPass, ctx)
+            if (!ctx.body) ctx.status = 401
+      } else {
+        const checkPass = await bcrypt.compare(password, person.password)
+        ctx.body = await sign(checkPass, ctx)
+        if (!ctx.body) ctx.status = 401
       }
-    })
-  return ctx;
+    return ctx;
+}
+
+function sign(authenticated, ctx) {
+    if (authenticated) {
+      return ctx.body = {
+        token: jwt.sign({password: ctx.headers.password }, 'xxx')
+      }
+    }
 }
