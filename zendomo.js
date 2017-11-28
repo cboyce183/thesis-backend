@@ -6,7 +6,7 @@ const fetch = require('isomorphic-fetch');
 
 // === create a user (when they sign up) ===
 const createUser = async (id, firstName, lastName) => {
-    fetch('http://192.168.0.35:3000/api/Trader', {
+    const first = await fetch('http://192.168.0.35:3000/api/Trader', {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -16,7 +16,9 @@ const createUser = async (id, firstName, lastName) => {
             $class: "org.zendomo.biznet.Trader",
             tradeId: id,
             firstName: firstName,
-            lastName: lastName
+            lastName: lastName,
+            tokens: 0,
+            credits: 0
         }),
         mode: 'cors'
     })
@@ -25,14 +27,15 @@ const createUser = async (id, firstName, lastName) => {
 
 // === get one user, filtered by id ===
 const getOneUser = async (id) => {
-    fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+    const result = await fetch('http://192.168.0.35:3000/api/Trader/' + id, {
         headers: {
             'Accept': 'application/json',
         },
         method: 'GET',
     })
     .then(res => res.json())
-    .then(res =>console.log('<------User from zendomo------>\n', res));
+    .then(res => {return res});
+    return result;
 }
 
 // === delete one user, filtered by id ===
@@ -48,22 +51,22 @@ const deleteOneUser = async (id) => {
 }
 
 // === edit one user, filtered by id ===
-const editOneUser = async (id) => {
-    fetch('http://192.168.0.35:3000/api/Trader/' + id, {
-        headers: {
-            'Accept': 'application/json',
-        },
-        method: 'PUT',
-        body: JSON.stringify({
-            $class: "org.zendomo.biznet.Trader",
-            tradeId: id,
-            firstName: firstName,
-            lastName: lastName
-        })
-    })
-    .then(res => res.json())
-    .then(res =>console.log('<------Editted user from zendomo------>\n', res));
-}
+// const editOneUser = async (id, firstName, lastName) => {
+//     fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+//         headers: {
+//             'Accept': 'application/json',
+//         },
+//         method: 'PUT',
+//         body: JSON.stringify({
+//             $class: "org.zendomo.biznet.Trader",
+//             tradeId: id,
+//             firstName: firstName,
+//             lastName: lastName
+//         })
+//     })
+//     .then(res => res.json())
+//     .then(res =>console.log('<------Editted user from zendomo------>\n', res));
+// }
 
 // === get all users (admin tool) ===
 const getAllUsers = async () => {
@@ -83,8 +86,10 @@ const transferFunds = async (senderID, receiverID, ammount) => {
     const doFirst = await fetch('http://192.168.0.35:3000/api/Trader/' + senderID, {
         headers: {
             'Accept': 'application/json',
+            'Content-Type': 'application/json'
         },
         method: 'PUT',
+        credentials: 'same-origin',        
         body: JSON.stringify({
             $class: "org.zendomo.biznet.Trader",
             tradeId: sender.id,
@@ -97,8 +102,10 @@ const transferFunds = async (senderID, receiverID, ammount) => {
     const thenDo = await fetch('http://192.168.0.35:3000/api/Trader/' + receiverID, {
         headers: {
             'Accept': 'application/json',
+            'Content-Type': 'application/json'            
         },
         method: 'PUT',
+        credentials: 'same-origin',        
         body: JSON.stringify({
             $class: "org.zendomo.biznet.Trader",
             tradeId: receiver.id,
@@ -111,11 +118,36 @@ const transferFunds = async (senderID, receiverID, ammount) => {
     .then(console.log(senderID + ' sent ' + receiverID + ' this much zen: ' + ammount));
 }
 
+const addFunds = async (id, ammount) => { 
+    const person = await getOneUser(id)
+    .then( response => {
+        fetch('http://192.168.0.35:3000/api/Trader/' + response.tradeId, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            method: 'PUT',
+            body: JSON.stringify({
+                $class: "org.zendomo.biznet.Trader",
+                tradeId: response.tradeId,
+                firstName: response.firstName,
+                lastName: response.lastName,
+                tokens: ammount,
+                credits: response.credits
+            }),
+            mode: 'cors'
+        });
+    });
+    return;
+}
+
 module.exports = {
     createUser,
     getOneUser,
     deleteOneUser,
     editOneUser,
     getAllUsers,
-    transferFunds
+    transferFunds,
+    addFunds
 }
