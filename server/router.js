@@ -18,4 +18,7 @@ router.get('/login', async (next) => {
   await authenticate(next);
 })
 
+// PUT requests
+//router.put('/edit-user' editUser);
+
 module.exports = router;
