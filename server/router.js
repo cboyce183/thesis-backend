@@ -5,6 +5,7 @@ const router = new Router();
 const addCompany = require('../controllers/company');
 const user = require('../controllers/user');
 const authenticate = require('./auth/authenticate');
+const wallet = require('../controllers/wallet');
 const getInfo = require('../controllers/common');
 const jwt = require('./auth/jwt');
 
@@ -20,5 +21,10 @@ router.get('/login', async (next) => {
 })
 
 // PUT requests
-router.put('/edit-user', user.edit) //Working on it
+
+router.put('/edit-user', user.edit) //Working on it (you better - Charlie)
+router.put('/admin-tip', wallet.tipUser);
+router.put('/transfer', wallet.transferFunds);
+router.put('/admin-fund', wallet.addFunds);
+
 module.exports = router;
