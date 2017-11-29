@@ -23,6 +23,7 @@
     "atob": "^2.0.3",
     "bcrypt": "^1.0.3",
     "faker": "^4.1.0",
+    "isomorphic-fetch": "^2.2.1",
     "jsonwebtoken": "^8.1.0",
     "koa": "^2.3.0",
     "koa-bodyparser": "^4.2.0",
