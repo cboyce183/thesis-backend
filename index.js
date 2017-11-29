@@ -18,6 +18,6 @@ app
   .use(logger())
   .use(bodyParser())
   .use(cors())
-  .use(koaJwt({secret: 'xxx'}).unless({path: ['/', '/add-company', '/add-user', '/login']}))
+  .use(koaJwt({secret: 'xxx'}).unless({path: ['/', '/add-company', '/add-user', '/login', '/edit-user', '/signup-user']}))
   .use(router.routes())
   .listen(3000);
