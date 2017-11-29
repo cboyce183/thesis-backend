@@ -13,7 +13,6 @@ async function addCompany (obj) {
       newCompany.password = hash;
       newCompany.save();
       return true;
-
     } else
       return false;
   } catch (e) {
@@ -23,7 +22,6 @@ async function addCompany (obj) {
 
 async function addUser (obj) {
   try {
-
     const user = await User.find({email: obj().email})
     //I check if the user exist in the user collection
     if (!user.length) {
@@ -35,10 +33,8 @@ async function addUser (obj) {
         //I look for the company where we want the user to be added and I push his id
         const company = await Company.findOne({name: 'McClure - Buckridge'}, 'usersId'); //newUser.company
         company.usersId.push(id);
-        const updatedCompany = new Company(company)
+        const updatedCompany = new Company(company);
         await updatedCompany.save();
-        console.log('company', company);
-
       return true;
     } else
       return false;
@@ -46,15 +42,59 @@ async function addUser (obj) {
     throw e;
   }
 }
-//
-// async function editUser (user) {
-//   const oldUserInfo = User.findOne({email: user.email});
-//   console.log('old user info', oldUserInfo);
-//
-// }
+
+async function getInfo (email) {
+
+}
+
+async function edit (user) {
+  //Check if the email already exist. If it exists returns 401
+  const oldUserInfo = await User.findOne({email: user.email});
+  if (!oldUserInfo) return null;
+  let newUserInfo = new User(oldUserInfo);
+  //Add a new profile pic if there is any
+  newUserInfo.profilePic = user.profilePic || newUserInfo.profilePic;
+  newUserInfo.email = user.email || newUserInfo.email;
+  newUserInfo.password = bcrypt.hashSync(user.password, 10) || newUserInfo.password;
+  await newUserInfo.save();
+  return 'ok';
+}
+
+async function signup (user) {
+  let oldUserInfo = await User.findOne({email: user.email});
+  if (!oldUserInfo) return null;
+  if (oldUserInfo.profilePic || oldUserInfo.password)
+    return false;
+  let newProfile = new User(oldUserInfo);
+  newProfile.profilePic = user.profilePic;
+  newProfile.password = bcrypt.hashSync(user.password, 10);
+  await newProfile.save();
+  return true;
+
+// ------- TRIED AND MISERABLY FAILED TO DO IT WITH A LOOP
+  //oldUserInfo = oldUserInfo.toJSON()
+  // I check if any other key of the object is empty
+  // If they have a content return false
+  // It means that the user tried to change his info from the signup page
+  // for (let property in oldUserInfo) {
+  //   console.log('property check', property);
+  //   if (oldUserInfo.hasOwnProperty(property) && property !== 'email' && property !=='_id' && property !=='__v')
+  //       if (oldUserInfo[property]) {
+  //         console.log('in if ', oldUserInfo[property]);
+  //         return false;
+  //       } else {
+  //         console.log('property update', newProfile[property], user[property], 'property', property);
+  //         newProfile[property] = user[property]
+  //       }
+  // }
+  //Complete the registration
+  //Add a new profile pic if there is any
+
+}
 
 module.exports = {
   addCompany: addCompany,
   addUser: addUser,
-  //editUser: editUser
+  edit: edit,
+  signup:signup,
 }
