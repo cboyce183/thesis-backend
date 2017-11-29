@@ -2,7 +2,7 @@ const newCompany = require('../models/insertdata')
 const randomCompany = require ('../mock/mocks');
 
 module.exports = async function add (ctx) {
-  const data = await newCompany.addCompany(randomCompany.company) //ctx.request.body
+  const data = await newCompany.addCompany(ctx.request.body) //ctx.request.body
   if (data)
     ctx.status = 201;
   else {

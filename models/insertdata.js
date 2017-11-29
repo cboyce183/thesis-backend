@@ -6,12 +6,12 @@ const User = mongoose.model('Users', Schemas.UserSchema);
 const Domo = require('../zendomo.js');
 const mailer = require('../server/mailer/mailer');
 
-async function addCompany (obj) {
+async function addCompany (newCompanyInfo) {
   try {
-    const company = await Company.find({name: obj().email})
+    const company = await Company.find({email: newCompanyInfo.email.toLowerCase()})
     if (!company.length) {
-      const newCompany = new Company(obj());
-      const hash = bcrypt.hashSync(obj().password, 10);
+      const newCompany = new Company(newCompanyInfo);
+      const hash = bcrypt.hashSync(newCompanyInfo.password, 10);
       newCompany.password = hash;
       newCompany.save();
       return true;
