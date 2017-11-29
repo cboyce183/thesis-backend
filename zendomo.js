@@ -22,7 +22,7 @@ const createUser = async (id, firstName, lastName) => {
         }),
         mode: 'cors'
     })
-    .then(()=>console.log('<------Sent to zendomo------>'));
+    .then( () => console.log('<------Sent to zendomo------>'));
 }
 
 // === get one user, filtered by id ===
@@ -47,26 +47,30 @@ const deleteOneUser = async (id) => {
         method: 'DELETE',
     })
     .then(res => res.json())
-    .then(res =>console.log('<------Deleted user from zendomo------>\n', res));
+    .then(res => console.log('<------Deleted user from zendomo------>\n', res));
 }
 
 // === edit one user, filtered by id ===
-// const editOneUser = async (id, firstName, lastName) => {
-//     fetch('http://192.168.0.35:3000/api/Trader/' + id, {
-//         headers: {
-//             'Accept': 'application/json',
-//         },
-//         method: 'PUT',
-//         body: JSON.stringify({
-//             $class: "org.zendomo.biznet.Trader",
-//             tradeId: id,
-//             firstName: firstName,
-//             lastName: lastName
-//         })
-//     })
-//     .then(res => res.json())
-//     .then(res =>console.log('<------Editted user from zendomo------>\n', res));
-// }
+const editOneUser = async (id, firstName, lastName) => {
+    fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'            
+        },
+        method: 'PUT',
+        credentials: 'same-origin',        
+        body: JSON.stringify({
+            $class: "org.zendomo.biznet.Trader",
+            tradeId: id,
+            firstName: firstName,
+            lastName: lastName,
+            tokens: 0,
+            credits: 0
+        })
+    })
+    .then(res => res.json())
+    .then(res => console.log('<------Editted user from zendomo------>\n', res));
+}
 
 // === get all users (admin tool) ===
 const getAllUsers = async () => {
@@ -77,9 +81,10 @@ const getAllUsers = async () => {
         method: 'GET',
     })
     .then(res => res.json())
-    .then(res =>console.log('<------Users from zendomo------>\n', res));
+    .then(res => console.log('<------Users from zendomo------>\n', res));
 }
 
+// === transfer funds between users ===
 const transferFunds = async (senderID, receiverID, ammount) => {
     const sender = await getOneUser(senderID);
     const receiver = await getOneUser(receiverID);
@@ -118,6 +123,7 @@ const transferFunds = async (senderID, receiverID, ammount) => {
     .then(console.log(senderID + ' sent ' + receiverID + ' this much zen: ' + ammount));
 }
 
+// === admin tool to add funds to a person ===
 const addFunds = async (id, ammount) => { 
     const person = await getOneUser(id)
     .then( response => {
@@ -142,6 +148,31 @@ const addFunds = async (id, ammount) => {
     return;
 }
 
+// === admin tool to tip a user ===
+const tipUser = async (id, ammount) => { 
+    const person = await getOneUser(id)
+    .then( response => {
+        fetch('http://192.168.0.35:3000/api/Trader/' + response.tradeId, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            credentials: 'same-origin',
+            method: 'PUT',
+            body: JSON.stringify({
+                $class: "org.zendomo.biznet.Trader",
+                tradeId: response.tradeId,
+                firstName: response.firstName,
+                lastName: response.lastName,
+                tokens: response.tokens,
+                credits: response.credits + ammount
+            }),
+            mode: 'cors'
+        });
+    });
+    return;
+}
+
 module.exports = {
     createUser,
     getOneUser,
@@ -149,5 +180,6 @@ module.exports = {
     editOneUser,
     getAllUsers,
     transferFunds,
-    addFunds
+    addFunds,
+    tipUser
 }
