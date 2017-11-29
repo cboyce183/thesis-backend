@@ -10,7 +10,7 @@ async function add (ctx) {
 }
 
 async function edit (ctx) {
-  const data = await setUser.edit(ctx.request.body); // to be replaced with ctx.request.body
+  const data = await setUser.editUser({email: 'user4@user.com'}); // to be replaced with ctx.request.body
   if (!data) {
     ctx.status = 401;
   } else {

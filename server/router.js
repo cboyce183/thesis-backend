@@ -4,10 +4,10 @@ const Router = require('koa-router');
 const router = new Router();
 const addCompany = require('../controllers/company');
 const user = require('../controllers/user');
+const authenticate = require('./auth/authenticate');
 const wallet = require('../controllers/wallet');
-const authenticate = require('./authenticate');
 const getInfo = require('../controllers/common');
-const jwt = require('./jwt');
+const jwt = require('./auth/jwt');
 
 // POST requests
 router.post('/add-company', addCompany);
@@ -15,12 +15,14 @@ router.post('/add-user', user.add);
 router.post('/signup-user', user.signup);
 
 // GET requests
-router.get('/info', getInfo.getInfo);
+router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
 router.get('/login', async (next) => {
   await authenticate(next);
 })
 
 // PUT requests
+
+router.put('/edit-user', user.edit) //Working on it (you better - Charlie)
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);
