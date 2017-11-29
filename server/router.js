@@ -4,6 +4,7 @@ const Router = require('koa-router');
 const router = new Router();
 const addCompany = require('../controllers/company');
 const user = require('../controllers/user');
+const wallet = require('../controllers/wallet');
 const authenticate = require('./authenticate');
 const getInfo = require('../controllers/common');
 const jwt = require('./jwt');
@@ -20,5 +21,8 @@ router.get('/login', async (next) => {
 })
 
 // PUT requests
+router.put('/admin-tip', wallet.tipUser);
+router.put('/transfer', wallet.transferFunds);
+router.put('/admin-fund', wallet.addFunds);
 
 module.exports = router;

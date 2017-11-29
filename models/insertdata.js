@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const Schemas = require('./schemas');
 const Company = mongoose.model('Companies', Schemas.AdminSchema);
 const User = mongoose.model('Users', Schemas.UserSchema);
+const Domo = require('../zendomo.js');
 
 async function addCompany (obj) {
   try {
@@ -57,6 +58,7 @@ async function edit (user) {
   newUserInfo.email = user.email || newUserInfo.email;
   newUserInfo.password = bcrypt.hashSync(user.password, 10) || newUserInfo.password;
   await newUserInfo.save();
+  await Domo.editOneUser(newUserInfo._id, newUserInfo.firstName, newUserInfo.lastName); //edits relevent user info in domo
   return 'ok';
 }
 
@@ -66,6 +68,7 @@ async function signup (user) {
   if (oldUserInfo.profilePic || oldUserInfo.password)
     return false;
   let newProfile = new User(oldUserInfo);
+  await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain  
   newProfile.profilePic = user.profilePic;
   newProfile.password = bcrypt.hashSync(user.password, 10);
   await newProfile.save();
