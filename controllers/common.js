@@ -1,6 +1,6 @@
 const mock = require('../mock/mocks');
 const email = require('../models/insertdata');
-const userType = require('../server/usertype');
+const userType = require('../server/auth/usertype');
 
 //This function is meant for testing
 async function getInfo (ctx) {

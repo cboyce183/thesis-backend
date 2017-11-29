@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Schemas = require('../models/schemas');
+const Schemas = require('../../models/schemas');
 const Token = mongoose.model('Tokens', Schemas.TokenSchema);
 
 module.exports = async function checkUserType (token) {

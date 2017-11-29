@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const Schemas = require('../models/schemas');
+const Schemas = require('../../models/schemas');
 const Company = mongoose.model('Companies', Schemas.AdminSchema);
 const User = mongoose.model('Users', Schemas.UserSchema);
 const Token = mongoose.model('Tokens', Schemas.TokenSchema);
