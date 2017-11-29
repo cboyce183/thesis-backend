@@ -42,8 +42,15 @@ const CatalogSchema = mongoose.Schema({
 
 })
 
+const TokenSchema = mongoose.Schema({
+  token:String,
+  isAdmin:Boolean,
+  email:String
+})
+
 module.exports = {
   UserSchema : UserSchema,
   AdminSchema: AdminSchema,
-  CatalogSchema: CatalogSchema
+  CatalogSchema: CatalogSchema,
+  TokenSchema: TokenSchema,
 }

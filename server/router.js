@@ -14,11 +14,11 @@ router.post('/add-user', user.add);
 router.post('/signup-user', user.signup);
 
 // GET requests
-router.get('/info', getInfo.getInfo);
+router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
 router.get('/login', async (next) => {
   await authenticate(next);
 })
 
 // PUT requests
-router.put('/edit-user', user.edit)
+router.put('/edit-user', user.edit) //Working on it
 module.exports = router;
