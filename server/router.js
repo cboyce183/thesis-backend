@@ -20,5 +20,5 @@ router.get('/login', async (next) => {
 })
 
 // PUT requests
-
+router.put('/edit-user', user.edit)
 module.exports = router;

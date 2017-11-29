@@ -47,7 +47,7 @@ async function getInfo (email) {
 
 }
 
-async function edit (user) {
+async function editUser (user) {
   //Check if the email already exist. If it exists returns 401
   const oldUserInfo = await User.findOne({email: user.email});
   if (!oldUserInfo) return null;
@@ -95,6 +95,6 @@ async function signup (user) {
 module.exports = {
   addCompany: addCompany,
   addUser: addUser,
-  edit: edit,
+  editUser: editUser,
   signup:signup,
 }
