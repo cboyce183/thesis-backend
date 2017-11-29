@@ -72,10 +72,12 @@ async function signup (user, urlId) {
   console.log('sign up user');
   let oldUserInfo = await User.findOne({email: user.email});
   if (!oldUserInfo) return null;
-  if (oldUserInfo._id !== urlId) {
-    console.log('tsu tsu tsu id url', urlId.id, oldUserInfo._id);
-    return false
+  if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
+    console.log('tsu tsu tsu id url', urlId['user-id'].toString() === oldUserInfo['_id'].toString());
+    return false;
   }
+  //If the following values are not empty it means that the user tried to change
+  //settings from the sign up page
   if (oldUserInfo.profilePic || oldUserInfo.password)
     return false;
   let newProfile = new User(oldUserInfo);

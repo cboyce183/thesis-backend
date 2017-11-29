@@ -21,7 +21,7 @@ async function edit (ctx) {
 
 async function signup (ctx) {
   const userId = ctx.request.query;
-  const data = await setUser.signup({email: 'valentina.predovic57@gmail.com'}, userId); // to be replaced with ctx.request.body
+  const data = await setUser.signup({email: 'valentina.predovic57@gmail.com', password:"hello",}, userId); // to be replaced with ctx.request.body
   if (!data) {
     ctx.status = 401;
   } else {
