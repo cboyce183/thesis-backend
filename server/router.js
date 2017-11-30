@@ -23,6 +23,11 @@ router.get('/login', async (next) => {
 router.get('/catalog', company.getItems);
 
 // PUT requests
+})
+router.get('/settings', company.settings);
+
+// PUT requests
+router.put('/admin-settings', company.updateSettings);
 router.put('/edit-user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);

@@ -1,10 +1,10 @@
 const catalog = require('../models/catalog');
-const newCompany = require('../models/insertdata');
 const randomCompany = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
+const Settings = require('../models/insertdata');
 
 async function add (ctx) {
-  const data = await newCompany.addCompany(randomCompany.company()) //ctx.request.body
+  const data = await Settings.addCompany(randomCompany.company()) //ctx.request.body
   if (data)
     ctx.status = 201;
   else {
@@ -55,9 +55,19 @@ async function getItems (ctx) {
   }
 }
 
+async function getSettings (ctx) {
+  const data = await Settings.getSettings(ctx.request.body);
+  data ? ctx.response.body = data : ctx.status = 404;
+}
+
+async function updateSettings (ctx) {
+  const data = await Settings.editSettings(ctx.request.body);
+  data ? ctx.status = 200 : ctx.status = 418;
+}
+
 module.exports = {
-  add : add,
-  addItem: addItem,
-  getItems: getItems,
-  delItem: delItem,
+  add,
+  addProduct,
+  getSettings,
+  updateSettings
 }
