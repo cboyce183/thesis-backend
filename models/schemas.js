@@ -15,7 +15,16 @@ const UserSchema = mongoose.Schema({
   availableCurrency:Number,
   receivedCurrency:Number,
   company:String,
-  createdOn:Number
+  createdOn:Number //timestamp
+});
+
+const CatalogSchema = mongoose.Schema({
+  name:String,
+  picture:String,
+  value:Number,
+  isService:Boolean,
+  schedule:Date
+
 });
 
 const AdminSchema = mongoose.Schema({
@@ -30,23 +39,16 @@ const AdminSchema = mongoose.Schema({
   coinName:String,
   isAdmin:Boolean,
   usersId:[String],
-  createdOn:Number
-})
+  catalog:[CatalogSchema],
+  createdOn:Number //timestamp
+});
 
-const CatalogSchema = mongoose.Schema({
-  name:String,
-  picture:String,
-  value:Number,
-  isService:Boolean,
-  schedule:Date
-
-})
 
 const TokenSchema = mongoose.Schema({
   token:String,
   isAdmin:Boolean,
   email:String
-})
+});
 
 module.exports = {
   UserSchema : UserSchema,

@@ -4,7 +4,7 @@ const userType = require('../server/auth/usertype');
 
 //This function is meant for testing
 async function getInfo (ctx) {
-  const auth = await userType(ctx.headers.authorization.slice(7))
+  const auth = await userType.checkUserType(ctx.headers.authorization.slice(7))
   if (auth) {
     ctx.body = 'it is an admin'
   } else {
