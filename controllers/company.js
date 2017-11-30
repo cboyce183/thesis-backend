@@ -1,6 +1,8 @@
-const newCompany = require('../models/insertdata')
+const catalog = require('../models/catalog');
 const randomCompany = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
+const Settings = require('../models/insertdata');
+
 async function add (ctx) {
   const data = await newCompany.addCompany(ctx.request.body) //ctx.request.body
   if (data)
@@ -20,7 +22,19 @@ async function addProduct (ctx) {
  }
 }
 
+async function getSettings (ctx) {
+  const data = await Settings.getSettings(ctx.request.body);
+  data ? ctx.response.body = data : ctx.status = 404;
+}
+
+async function updateSettings (ctx) {
+  const data = await Settings.editSettings(ctx.request.body);
+  data ? ctx.status = 200 : ctx.status = 418;
+}
+
 module.exports = {
-  add : add,
-  addProduct: addProduct
+  add,
+  addProduct,
+  getSettings,
+  updateSettings
 }

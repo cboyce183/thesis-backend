@@ -20,10 +20,11 @@ router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
 router.get('/login', async (next) => {
   await authenticate(next);
 })
+router.get('/settings', company.settings);
 
 // PUT requests
-
-router.put('/edit-user', user.edit)
+router.put('/admin-settings', company.updateSettings);
+router.put('/edit-user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);
