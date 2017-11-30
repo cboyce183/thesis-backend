@@ -40,19 +40,10 @@ const AdminSchema = mongoose.Schema({
   isAdmin: Boolean,
   usersId: [ String ],
   catalog: [ CatalogSchema ],
-  createdOn: Number //timestamp ??????????????????? what
+  createdOn: Number, //timestamp ??????????????????? what
   address: String,
   color: String
 });
-
-const CatalogSchema = mongoose.Schema({
-  name: String,
-  picture: String,
-  value: Number,
-  isService: Boolean,
-  schedule: Date
-});
-
 
 const TokenSchema = mongoose.Schema({
   token: String,
@@ -64,6 +55,5 @@ module.exports = {
   UserSchema : UserSchema,
   AdminSchema: AdminSchema,
   CatalogSchema: CatalogSchema,
-  TokenSchema: TokenSchema,
-  SettingsSchema: SettingsSchema
+  TokenSchema: TokenSchema
 }
