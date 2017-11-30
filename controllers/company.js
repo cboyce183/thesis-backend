@@ -12,7 +12,12 @@ async function add (ctx) {
 }
 
 async function addProduct (ctx) {
+ const isAdmin = await adminPrivilege(ctx.headers.authorization.slice(7));
+ if (isAdmin) {
 
+ } else {
+   ctx.status = 403 //forbidden, in case the user tries to access to the admin page
+ }
 }
 
 module.exports = {
