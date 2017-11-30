@@ -10,6 +10,7 @@ function company () {
     weeklyAllow: faker.random.number(),
     coinName: 'Zen',
     isAdmin: true,
+    catalog:[],
     createdOn: 1511879017142
   }
 }
