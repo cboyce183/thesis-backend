@@ -7,5 +7,5 @@ module.exports = async function checkUserType (token) {
   //I return the user type if the token is found in the Token collection
   if (userType.length)
     return userType[0].isAdmin;
-  return null;
+  return 'not found';
 }

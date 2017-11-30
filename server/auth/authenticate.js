@@ -23,7 +23,6 @@ module.exports = async function (ctx) {
             ctx.body = await sign(checkPass, ctx, company.email, company.isAdmin);
             if (!ctx.body) ctx.status = 401;
       } else {
-        console.log('person', person);
         const checkPass = await bcrypt.compare(password, person.password);
         ctx.body = await sign(checkPass, ctx, person.email, person.isAdmin);
         if (!ctx.body) ctx.status = 401;
@@ -39,9 +38,7 @@ async function sign (authenticated, ctx, email, admin) {
       }
       //I check if the token already exist in the db
       //and I check whether the user is an admin or not
-      console.log('lookgi for', token.token, ' into the db');
       const isToken = await Token.find({email: email});
-      console.log('token in the db', isToken);
       if (isToken.length) {
         if (isToken.isAdmin)
           return ctx.body = true;
@@ -52,7 +49,6 @@ async function sign (authenticated, ctx, email, admin) {
         newToken.token = token.token;
         newToken.email = email;
         newToken.isAdmin = admin;
-        console.log('saving the new token...', newToken);
         await newToken.save();
         return token;
       }
