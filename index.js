@@ -9,15 +9,22 @@ const cors = require('koa2-cors');
 const koaJwt = require('koa-jwt');
 const db = require('./config');
 
-bash.series([
-  'echo "the current version of node being used: "',
-  'node --version'
-])
-
 app
   .use(logger())
   .use(bodyParser())
   .use(cors())
-  .use(koaJwt({secret: 'xxx'}).unless({path: ['/', '/add-company', '/add-user', '/login', '/signup-user', '/transfer', '/admin-fund', '/admin-tip']}))
+  .use(koaJwt({secret: 'xxx'})
+    .unless({path: [
+      '/',
+      '/add-company',
+      '/add-user',
+      '/login',
+      '/signup-user',
+      '/transfer',
+      '/admin-fund',
+      '/admin-tip',
+      '/settings',
+      '/admin-settings'
+    ]}))
   .use(router.routes())
   .listen(4200);

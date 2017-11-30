@@ -15,7 +15,7 @@ const UserSchema = mongoose.Schema({
   availableCurrency:Number,
   receivedCurrency:Number,
   company:String,
-  createdOn:Number
+  createdOn:Number,
 });
 
 const AdminSchema = mongoose.Schema({
@@ -30,7 +30,9 @@ const AdminSchema = mongoose.Schema({
   coinName:String,
   isAdmin:Boolean,
   usersId:[String],
-  createdOn:Number
+  createdOn:Number,
+  address: String,
+  color: String
 })
 
 const CatalogSchema = mongoose.Schema({
@@ -53,4 +55,5 @@ module.exports = {
   AdminSchema: AdminSchema,
   CatalogSchema: CatalogSchema,
   TokenSchema: TokenSchema,
+  SettingsSchema: SettingsSchema
 }

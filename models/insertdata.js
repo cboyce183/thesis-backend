@@ -84,31 +84,55 @@ async function signup (user, urlId) {
   await newProfile.save();
 
   return true;
+}
 
-// ------- TRIED AND MISERABLY FAILED TO DO IT WITH A LOOP
-  //oldUserInfo = oldUserInfo.toJSON()
-  // I check if any other key of the object is empty
-  // If they have a content return false
-  // It means that the user tried to change his info from the signup page
-  // for (let property in oldUserInfo) {
-  //   console.log('property check', property);
-  //   if (oldUserInfo.hasOwnProperty(property) && property !== 'email' && property !=='_id' && property !=='__v')
-  //       if (oldUserInfo[property]) {
-  //         console.log('in if ', oldUserInfo[property]);
-  //         return false;
-  //       } else {
-  //         console.log('property update', newProfile[property], user[property], 'property', property);
-  //         newProfile[property] = user[property]
-  //       }
-  // }
-  //Complete the registration
-  //Add a new profile pic if there is any
+const getSettings = async (info) => {
+  try {
+    const settings = await Company.find({email: info.email});
+    if (settings) {
+      return {
+        name: settings.name,
+        coinName: settings.coinName,
+        color: settings.color,
+        logo: settings.logo,
+        name: settings.name,
+        address: settings.address
+      };
+    } else
+      return false;
+  } catch (e) {
+    throw e;
+  }
+}
 
+const editSettings = async (info) => { //?? have to test this ??//
+  try {
+    const defaults = await Company.find({ email: info.email });
+    const settings = await Company.findOneAndUpdate(
+      { email: info.email },
+      {
+        $set: {
+          "name": info.name || defaults.name,  
+          "coinName": info.coinName || defaults.coinName,
+          "color": info.color || defaults.color,
+          "address": info.address || defaults.address,
+          "allowance": info.allowance || defaults.allowance,
+          "logo": info.logo || defaults.logo
+        }
+      },
+      { returnNewDocument: true }
+    );
+    return settings;
+  } catch (e) {
+    throw e;
+  }
 }
 
 module.exports = {
-  addCompany: addCompany,
-  addUser: addUser,
-  editUser: editUser,
-  signup:signup,
+  addCompany,
+  addUser,
+  editUser,
+  signup,
+  getSettings,
+  editSettings
 }
