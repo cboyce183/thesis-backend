@@ -19,14 +19,26 @@ async function add (product, companyEmail, isService) {
   await company[0].save();
 }
 
+async function del (companyEmail, companyId) {
+  let company = new Company();
+  company = await Company.find({email: companyEmail});
+  for (let i = 0; i < company[0].catalog.length; i++) {
+    if (company[0].catalog[i]._id == companyId.id) {
+      const x = company[0].catalog.splice(i,1);
+      await company[0].save();
+      return company[0].catalog.splice(i,1)
+    }
+  }
+
+}
+
 async function get (companyEmail) {
   const company = await Company.find({email: companyEmail});
-  console.log('the company is', company);
-  console.log('catalog', company[0].catalog);
   return {catalog: company[0].catalog};
 }
 
 module.exports = {
   add: add,
   get: get,
+  del: del,
 }

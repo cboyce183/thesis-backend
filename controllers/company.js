@@ -20,9 +20,9 @@ async function addItem (ctx) {
    if (isAdmin) {
     //I check if the content sent in the request body is a product or a service
     if (data.isService) {
-      await catalog.add({name: 'sexy cat'}, 'olen.mosciski78@gmail.com', data.isService) // //to be replaced with ctx.request.body and companyEmail
+      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', data.isService) // //to be replaced with ctx.request.body and companyEmail
     } else if (!data.isService) {
-      await catalog.add({name: 'sexy cat'}, 'olen.mosciski78@gmail.com', data.isService) //to be replaced with ctx.request.body and companyEmail
+      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', data.isService) //to be replaced with ctx.request.body and companyEmail
       ctx.status = 201;
     } else {
       //Probably useless check, it can't be undefined, but you never know... black magic is always behind the corner
@@ -30,6 +30,17 @@ async function addItem (ctx) {
     }
   } else {
      ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
+async function delItem (ctx) {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    await catalog.del('rodrick_schneider@gmail.com',{id: '5a20209cbc98a20eef1bf178'}) //to be replaced with ctx.request.body
+    ctx.status = 204;
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
 
@@ -48,4 +59,5 @@ module.exports = {
   add : add,
   addItem: addItem,
   getItems: getItems,
+  delItem: delItem,
 }

@@ -13,7 +13,7 @@ const jwt = require('./auth/jwt');
 router.post('/add-company', company.add);
 router.post('/add-user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
-router.post('/add-item', company.addItem);
+router.post('/item', company.addItem);
 
 // GET requests
 router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
@@ -27,5 +27,8 @@ router.put('/edit-user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);
+
+// DEL requests
+router.delete('/item', company.delItem);
 
 module.exports = router;
