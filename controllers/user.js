@@ -1,5 +1,6 @@
 const setUser = require('../models/insertdata');
 const randomUser = require('../mock/mocks');
+const adminPrivilege = require('../server/auth/usertype');
 
 async function add (ctx) {
   const data = await setUser.addUser(randomUser.user) // to be replaced with ctx.request.body
@@ -10,12 +11,18 @@ async function add (ctx) {
 }
 
 async function edit (ctx) {
-  const data = await setUser.editUser({email: 'user4@user.com'}); // to be replaced with ctx.request.body
-  if (!data) {
-    ctx.status = 401;
+  const isAdmin = await adminPrivilege(ctx.headers.authorization.slice(7))
+  if (!isAdmin) {
+    const data = await setUser.editUser({email: 'godfrey_okuneva25@yahoo.com'}); // to be replaced with ctx.request.body
+    if (!data) {
+      ctx.status = 401;
+    } else if (data == 'err') {
+      ctx.status = 500
+    } else {
+      ctx.status = 200;
+    }
   } else {
-    ctx.status = 200;
-    //ctx.response.body = JSON.stringify(data)
+    ctx.status = 403 //In this case an admin tried to access to a user page. Status 403: forbidden
   }
 }
 

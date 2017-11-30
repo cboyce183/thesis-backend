@@ -32,10 +32,8 @@ async function addUser (obj) {
         newUser.password = hash;
         await newUser.save();
         //I need to grab the id of the user just saved
-        //here
         const id = await User.findOne({email: newUser.email}, '_id');
         //After I saved the new user in the db, I send an email to confirm the registration
-        console.log('inside add user', newUser);
         await mailer(newUser,id);
         //I look for the company where we want the user to be added and I push his id
         const company = await Company.findOne({name: 'McClure - Buckridge'}, 'usersId'); //newUser.company
@@ -50,30 +48,29 @@ async function addUser (obj) {
   }
 }
 
-async function getInfo (email) {
-
-}
-
 async function editUser (user) {
-  //Check if the email already exist. If it exists returns 401
-  const oldUserInfo = await User.findOne({email: user.email});
-  if (!oldUserInfo) return null;
-  let newUserInfo = new User(oldUserInfo);
-  //Add a new profile pic if there is any
-  newUserInfo.profilePic = user.profilePic || newUserInfo.profilePic;
-  newUserInfo.email = user.email || newUserInfo.email;
-  newUserInfo.password = bcrypt.hashSync(user.password, 10) || newUserInfo.password;
-  await newUserInfo.save();
-  await Domo.editOneUser(newUserInfo._id, newUserInfo.firstName, newUserInfo.lastName); //edits relevent user info in domo
-  return 'ok';
+  try {
+    //Check if the email already exist. If it exists returns 401
+    const oldUserInfo = await User.findOne({email: user.email});
+    if (!oldUserInfo) return null;
+    let newUserInfo = new User(oldUserInfo);
+    //Add a new profile pic if there is any
+    newUserInfo.profilePic = user.profilePic || newUserInfo.profilePic;
+    newUserInfo.password = bcrypt.hashSync(user.password, 10) || newUserInfo.password;
+    await newUserInfo.save();
+    await Domo.editOneUser(newUserInfo._id, newUserInfo.firstName, newUserInfo.lastName); //edits relevent user info in domo
+    return 'ok';
+  } catch (e) {
+    console.log('------------ oh oh oh shitstorm is coming... \n', e, '\n------------');
+    return 'err';
+
+  }
 }
 
 async function signup (user, urlId) {
-  console.log('sign up user');
   let oldUserInfo = await User.findOne({email: user.email});
   if (!oldUserInfo) return null;
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
-    console.log('tsu tsu tsu id url', urlId['user-id'].toString() === oldUserInfo['_id'].toString());
     return false;
   }
   //If the following values are not empty it means that the user tried to change
