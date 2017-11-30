@@ -19,11 +19,11 @@ router.post('/add-item', company.addItem);
 router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
 router.get('/login', async (next) => {
   await authenticate(next);
-})
+});
+router.get('/catalog', company.getItems);
 
 // PUT requests
-
-router.put('/edit-user', user.edit)
+router.put('/edit-user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);

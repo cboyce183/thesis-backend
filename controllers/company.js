@@ -25,13 +25,27 @@ async function addItem (ctx) {
       await catalog.add({name: 'sexy cat'}, 'olen.mosciski78@gmail.com', data.isService) //to be replaced with ctx.request.body and companyEmail
       ctx.status = 201;
     } else {
+      //Probably useless check, it can't be undefined, but you never know... black magic is always behind the corner
       ctx.response.body = 'ops... something went wrong';
     }
   } else {
      ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
+
+async function getItems (ctx) {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    ctx.status = 201;
+    ctx.response.body = await catalog.get('olen.mosciski78@gmail.com'); //to be replaced with companyEmail
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
 module.exports = {
   add : add,
-  addItem: addItem
+  addItem: addItem,
+  getItems: getItems,
 }
