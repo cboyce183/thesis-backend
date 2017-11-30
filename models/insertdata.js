@@ -30,6 +30,7 @@ async function addUser (obj) {
       const newUser = new User(obj());
       const hash = bcrypt.hashSync(obj().password, 10);
         newUser.password = hash;
+        newUser.company = 'admin@admin.com';
         await newUser.save();
         //I need to grab the id of the user just saved
         const id = await User.findOne({email: newUser.email}, '_id');
@@ -61,7 +62,7 @@ async function editUser (user) {
     await Domo.editOneUser(newUserInfo._id, newUserInfo.firstName, newUserInfo.lastName); //edits relevent user info in domo
     return 'ok';
   } catch (e) {
-    console.log('------------ oh oh oh shitstorm is coming... \n', e, '\n------------');
+    console.error(e);
     return 'err';
 
   }
@@ -84,6 +85,18 @@ async function signup (user, urlId) {
   await newProfile.save();
 
   return true;
+}
+
+const getCompanyInfo = async (info) => {
+  try {
+    const settings = await Company.find({email: info.email});
+    if (settings) {
+      return settings;
+    } else
+      return false;
+  } catch (e) {
+    throw e;
+  }
 }
 
 const getSettings = async (info) => {
@@ -112,7 +125,7 @@ const editSettings = async (info) => { //?? have to test this ??//
       { email: info.email },
       {
         $set: {
-          "name": info.name || defaults.name,  
+          "name": info.name || defaults.name,
           "coinName": info.coinName || defaults.coinName,
           "color": info.color || defaults.color,
           "address": info.address || defaults.address,
@@ -134,5 +147,6 @@ module.exports = {
   editUser,
   signup,
   getSettings,
-  editSettings
+  editSettings,
+  getCompanyInfo
 }

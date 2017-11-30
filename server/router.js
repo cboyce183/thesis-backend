@@ -10,7 +10,7 @@ const getInfo = require('../controllers/common');
 const jwt = require('./auth/jwt');
 
 // POST requests
-router.post('/add-company', company.add);
+router.post('/company', company.add);
 router.post('/add-user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
 router.post('/item', company.addItem);
@@ -21,10 +21,11 @@ router.get('/login', async (next) => {
   await authenticate(next);
 });
 router.get('/catalog', company.getItems);
+router.get('/company', company.getCompanyInfo);
 
 // PUT requests
-})
-router.get('/settings', company.settings);
+
+router.get('/settings', company.getSettings);
 
 // PUT requests
 router.put('/admin-settings', company.updateSettings);

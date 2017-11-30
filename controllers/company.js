@@ -55,6 +55,11 @@ async function getItems (ctx) {
   }
 }
 
+async function getCompanyInfo (ctx) {
+  const data = await Settings.getCompanyInfo(ctx.request.body);
+  data ? ctx.response.body = data : ctx.status = 404;
+}
+
 async function getSettings (ctx) {
   const data = await Settings.getSettings(ctx.request.body);
   data ? ctx.response.body = data : ctx.status = 404;
@@ -67,7 +72,10 @@ async function updateSettings (ctx) {
 
 module.exports = {
   add,
-  addProduct,
+  addItem,
+  getItems,
+  delItem,
   getSettings,
-  updateSettings
+  updateSettings,
+  getCompanyInfo
 }
