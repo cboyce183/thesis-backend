@@ -13,7 +13,7 @@ const jwt = require('./auth/jwt');
 router.post('/add-company', company.add);
 router.post('/add-user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
-router.post('/add-product', company.addProduct);
+router.post('/add-item', company.addItem);
 
 // GET requests
 router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it

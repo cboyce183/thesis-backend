@@ -23,7 +23,8 @@ const CatalogSchema = mongoose.Schema({
   picture:String,
   value:Number,
   isService:Boolean,
-  schedule:Date
+  schedule:Date,
+  createdOn:Number //timestamp
 
 });
 

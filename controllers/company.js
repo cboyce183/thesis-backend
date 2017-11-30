@@ -13,17 +13,25 @@ async function add (ctx) {
   }
 }
 
-async function addProduct (ctx) {
-  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7))
+async function addItem (ctx) {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  const data = {isService: false}; //to be replaced with ctx.request.body
    if (isAdmin) {
-    await catalog.addProduct({name: 'sexy cat'}, 'olen.mosciski78@gmail.com') //to be replaced with ctx.request.body and companyEmail
-    ctx.status = 201;
+    //I check if the content sent in the request body is a product or a service
+    if (data.isService) {
+      await catalog.add({name: 'sexy cat'}, 'olen.mosciski78@gmail.com', data.isService) // //to be replaced with ctx.request.body and companyEmail
+    } else if (!data.isService) {
+      await catalog.add({name: 'sexy cat'}, 'olen.mosciski78@gmail.com', data.isService) //to be replaced with ctx.request.body and companyEmail
+      ctx.status = 201;
+    } else {
+      ctx.response.body = 'ops... something went wrong';
+    }
   } else {
      ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
 module.exports = {
   add : add,
-  addProduct: addProduct
+  addItem: addItem
 }
