@@ -24,11 +24,14 @@ module.exports = function sendEmail (userData, id) {
 
     // setup email data with unicode symbols
     let mailOptions = {
-      from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
-      to: `${userData.email}, otrebor619@gmail.com`, // list of receivers
-      subject: 'Hello ✔', // Subject line
-      text: 'Hello world?', // plain text body
-      html: ` here the link
+      from: '"Zendama 👻" <no-reply@zendama.com>', // sender address
+      to: `${userData.email}`, // list of receivers
+      subject: 'NAMEOFTHECOMPANY added you ✔', // Subject line
+      text: `
+        Hello ${userData.name},
+        You received an invitation to join Zendama
+        `,
+      html: ` Click here to join
         <a href='http://localhost:4200/signup-user?user-id=${id._id}'>http://localhost:4200/signup-user?user-id=${id._id}</a>
       `
     };
