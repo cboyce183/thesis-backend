@@ -2,33 +2,34 @@ const catalog = require('../models/catalog');
 const randomCompany = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
-
-async function add (ctx) {
-  const data = await Settings.addCompany(randomCompany.company()); //ctx.request.body
-  (data) ? ctx.status = 201 : ctx.status = 409; //409:conflict, it means that there is already an account registred with the given email
+const check = require('./common.js');
+const addCompany = async (ctx) => {
+  const res = await Settings.addCompany(randomCompany.company()); //ctx.request.body
+  (res) ? ctx.status = 201 : ctx.status = 409; //409:conflict, it means that there is already an account registred with the given email
 }
 
-async function addItem (ctx) {
+const addItem = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
-  const data = {isService: false}; //to be replaced with ctx.request.body
    if (isAdmin) {
+     const product = ctx.request.body;
+    //I check the price of the product
+    if (check.price(product.price) === 422) return ctx.status = 422;
     //I check if the content sent in the request body is a product or a service
-    if (data.isService) {
-      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', data.isService) // //to be replaced with ctx.request.body and companyEmail
-    } else if (!data.isService) {
-      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', data.isService) //to be replaced with ctx.request.body and companyEmail
-      ctx.status = 201;
+    if (product.isService) {
+      return await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', product.isService) // //to be replaced with ctx.request.body and companyEmail
+    } else if (!product.isService) {
+      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', product.isService) //to be replaced with ctx.request.body and companyEmail
+      return ctx.status = 201;
     } else {
       //Probably useless check, it can't be undefined, but you never know... black magic is always behind the corner
-      ctx.response.body = 'ops... something went wrong';
+      return ctx.response.body = 'ops... something went wrong';
     }
-  } else {
-    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
+  return ctx.status = 403; //forbidden, in case the user tries to access to the admin page
 }
 
-async function delItem (ctx) {
+const delItem = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
@@ -61,7 +62,7 @@ const editItem = async (ctx) => {
   }
 }
 
-async function getItems (ctx) {
+const getItems = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
@@ -72,12 +73,12 @@ async function getItems (ctx) {
   }
 }
 
-async function getCompanyInfo (ctx) {
+const getCompanyInfo = async (ctx) => {
   const data = await Settings.getCompanyInfo(ctx.request.body);
   data ? ctx.response.body = data : ctx.status = 404;
 }
 
-async function getUserInfo (ctx) {
+const getUserInfo = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
@@ -88,18 +89,18 @@ async function getUserInfo (ctx) {
   }
 }
 
-async function getSettings (ctx) {
+const getSettings = async (ctx) => {
   const data = await Settings.getSettings(ctx.request.body);
   data ? ctx.response.body = data : ctx.status = 404;
 }
 
-async function updateSettings (ctx) {
+const updateSettings = async (ctx) => {
   const data = await Settings.editSettings(ctx.request.body);
   data ? ctx.status = 200 : ctx.status = 418;
 }
 
 module.exports = {
-  add,
+  addCompany,
   addItem,
   getItems,
   delItem,

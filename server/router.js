@@ -10,18 +10,18 @@ const getInfo = require('../controllers/common');
 const jwt = require('./auth/jwt');
 
 // POST requests
-router.post('/company', company.add);
+router.post('/company', company.addCompany);
 router.post('/user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
 router.post('/catalog', company.addItem); //Add items to the catalog
 router.post('/catalog/product/', user.buyItem); //Buy items
 
 // GET requests
-router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
 router.get('/catalog', company.getItems);
 router.get('/company', company.getCompanyInfo);
 router.get('/settings', company.getSettings);
 router.get('/user', company.getUserInfo);
+router.get('/signup-user', user.signupRequest);
 router.get('/login', async (next) => {
   await authenticate(next);
 });
@@ -35,7 +35,7 @@ router.put('/admin-fund', wallet.addFunds);
 router.put('/catalog', company.editItem);
 
 // DEL requests
-router.delete('/catalog', company.delItem);
+router.delete('/catalog', company.delItem); //delete has no body, change in ctx.request.query
 router.delete('/user', company.delUser);
 
 module.exports = router;

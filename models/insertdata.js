@@ -13,7 +13,7 @@ async function addCompany (newCompanyInfo) {
       const newCompany = new Company(newCompanyInfo);
       const hash = bcrypt.hashSync(newCompanyInfo.password, 10);
       newCompany.password = hash;
-      newCompany.save();
+      await newCompany.save();
       return true;
     } else
       return false;
@@ -22,15 +22,15 @@ async function addCompany (newCompanyInfo) {
   }
 }
 
-async function addUser (obj) {
+async function addUser (companyEmail, obj) {
   try {
     const user = await User.find({email: obj().email});
-    //I check if the user exist in the user collection
+    //I check if the user exists in the user collection
     if (!user.length) {
       const newUser = new User(obj());
       const hash = bcrypt.hashSync(obj().password, 10);
         newUser.password = hash;
-        newUser.company = 'admin@admin.com';
+        newUser.company = companyEmail;
         await newUser.save();
         //I need to grab the id of the user just saved
         const id = await User.findOne({email: newUser.email}, '_id');
@@ -117,9 +117,11 @@ const getCompanyInfo = async (info) => {
   }
 }
 
-const getUserInfo = async (info) => {
+const getUserInfo = async (companyEmail, userId) => {
   try {
-    const userInfo = await User.find({email: info.email});
+    let company = new Company();
+    company = await Company.find({})
+    const userInfo = await User.find({id: userId.id});
     (userInfo) ? userInfo : false;
   } catch (e) {
     throw e;
