@@ -10,8 +10,19 @@ async function add (ctx) {
     ctx.body = 'This user already exists';
 }
 
+const buyItem = async (ctx) => {
+  const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (!isAdmin) {
+    const res = await catalog.buyItem(userEmail, ctx.request.query.id, ctx.request.body);
+    (res) ? ctx.status = 201 : ctx.body = 'ops... something went wrong';
+  } else {
+    ctx.status = 403; //forbidden, in case the admin tries to buy an item
+  }
+}
+
 async function edit (ctx) {
-  const isAdmin = await adminPrivilege(ctx.headers.authorization.slice(7))
+  const isAdmin = await adminPrivilege(ctx.headers.authorization.slice(7));
   if (!isAdmin) {
     const data = await setUser.editUser({email: 'godfrey_okuneva25@yahoo.com'}); // to be replaced with ctx.request.body
     if (!data) {
@@ -41,4 +52,5 @@ module.exports = {
   add,
   edit,
   signup,
+  buyItem,
 }

@@ -74,7 +74,6 @@ const delUser = async (companyEmail, userId) => {
         return true;
       }
     }
-
   } catch (e) {
     console.error(e);
     return 'err'
@@ -91,7 +90,6 @@ async function signup (user, urlId) {
   //settings from the sign up page
   if (oldUserInfo.profilePic || oldUserInfo.password)
     return false;
-
   let newProfile = new User(oldUserInfo);
   await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain
   newProfile.profilePic = user.profilePic;

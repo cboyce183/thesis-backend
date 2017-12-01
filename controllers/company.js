@@ -4,13 +4,8 @@ const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 
 async function add (ctx) {
-  const data = await Settings.addCompany(randomCompany.company()) //ctx.request.body
-  if (data)
-    ctx.status = 201;
-  else {
-    ctx.body = 'This company already exists';
-    ctx.status = 204; //Need to check which status set in this scenario
-  }
+  const data = await Settings.addCompany(randomCompany.company()); //ctx.request.body
+  (data) ? ctx.status = 201 : ctx.status = 409; //409:conflict, it means that there is already an account registred with the given email
 }
 
 async function addItem (ctx) {
@@ -29,7 +24,7 @@ async function addItem (ctx) {
       ctx.response.body = 'ops... something went wrong';
     }
   } else {
-     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
 
@@ -83,7 +78,14 @@ async function getCompanyInfo (ctx) {
 }
 
 async function getUserInfo (ctx) {
-  //a specific user or all of them?
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    ctx.status = 201;
+    ctx.response.body = await Settings.getUserInfo('olen.mosciski78@gmail.com', {id: '13092902'}); //to be replaced with companyEmail
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
 }
 
 async function getSettings (ctx) {
