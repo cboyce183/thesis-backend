@@ -44,6 +44,28 @@ async function delItem (ctx) {
   }
 }
 
+const delUser = async (ctx) => {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    await Settings.delUser('rodrick_schneider@gmail.com', {id: '5a20209cbc98a20eef1bf178'}) //to be replaced with ctx.request.body
+    ctx.status = 204;
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
+const editItem = async (ctx) => {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const res = await catalog.edit('rodrick_schneider@gmail.com', {_id: '5a2015bf483e080e19c4bd65', name: 'very sexy cat'}) //to be replaced with ctx.request.body and newItem
+    (res) ? ctx.status = 204 : ctx.body = 'ops... something went wrong';
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
 async function getItems (ctx) {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
@@ -58,6 +80,10 @@ async function getItems (ctx) {
 async function getCompanyInfo (ctx) {
   const data = await Settings.getCompanyInfo(ctx.request.body);
   data ? ctx.response.body = data : ctx.status = 404;
+}
+
+async function getUserInfo (ctx) {
+  //a specific user or all of them?
 }
 
 async function getSettings (ctx) {
@@ -75,7 +101,10 @@ module.exports = {
   addItem,
   getItems,
   delItem,
+  editItem,
   getSettings,
   updateSettings,
-  getCompanyInfo
+  getCompanyInfo,
+  getUserInfo,
+  delUser,
 }

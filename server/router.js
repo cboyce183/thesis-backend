@@ -11,30 +11,30 @@ const jwt = require('./auth/jwt');
 
 // POST requests
 router.post('/company', company.add);
-router.post('/add-user', user.add);
+router.post('/user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
-router.post('/item', company.addItem);
+router.post('/catalog', company.addItem);
 
 // GET requests
 router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
+router.get('/catalog', company.getItems);
+router.get('/company', company.getCompanyInfo);
+router.get('/settings', company.getSettings);
+router.get('/user', company.getUserInfo);
 router.get('/login', async (next) => {
   await authenticate(next);
 });
-router.get('/catalog', company.getItems);
-router.get('/company', company.getCompanyInfo);
-
-// PUT requests
-
-router.get('/settings', company.getSettings);
 
 // PUT requests
 router.put('/admin-settings', company.updateSettings);
-router.put('/edit-user', user.edit);
+router.put('/user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);
+router.put('/catalog', company.editItem);
 
 // DEL requests
-router.delete('/item', company.delItem);
+router.delete('/catalog', company.delItem);
+router.delete('/user', company.delUser);
 
 module.exports = router;

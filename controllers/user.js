@@ -17,7 +17,7 @@ async function edit (ctx) {
     if (!data) {
       ctx.status = 401;
     } else if (data == 'err') {
-      ctx.status = 500
+      ctx.status = 500;
     } else {
       ctx.status = 200;
     }
@@ -26,9 +26,10 @@ async function edit (ctx) {
   }
 }
 
+
 async function signup (ctx) {
   const userId = ctx.request.query;
-  const data = await setUser.signup({email: 'valentina.predovic57@gmail.com', password:"hello",}, userId); // to be replaced with ctx.request.body
+  const data = await setUser.signup({email: 'russel.medhurst@gmail.com', password:"hellouser",}, userId); // to be replaced with ctx.request.body
   if (!data) {
     ctx.status = 401;
   } else {
@@ -37,7 +38,7 @@ async function signup (ctx) {
 }
 
 module.exports = {
-  add: add,
-  edit: edit,
-  signup: signup
+  add,
+  edit,
+  signup,
 }
