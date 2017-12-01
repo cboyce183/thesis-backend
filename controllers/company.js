@@ -44,6 +44,17 @@ async function delItem (ctx) {
   }
 }
 
+const editItem = async (ctx) => {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const res = await catalog.edit('rodrick_schneider@gmail.com', {_id: '5a2015bf483e080e19c4bd65', name: 'very sexy cat'}) //to be replaced with ctx.request.body and newItem
+    (res) ? ctx.status = 204 : ctx.body = 'ops... something went wrong';
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
 async function getItems (ctx) {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
@@ -75,6 +86,7 @@ module.exports = {
   addItem,
   getItems,
   delItem,
+  editItem,
   getSettings,
   updateSettings,
   getCompanyInfo
