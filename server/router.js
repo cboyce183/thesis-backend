@@ -17,12 +17,13 @@ router.post('/catalog', company.addItem);
 
 // GET requests
 router.get('/info', getInfo.getInfo); //This is meant for testing, ignore it
-router.get('/login', async (next) => {
-  await authenticate(next);
-});
 router.get('/catalog', company.getItems);
 router.get('/company', company.getCompanyInfo);
 router.get('/settings', company.getSettings);
+router.get('/user', company.getUserInfo);
+router.get('/login', async (next) => {
+  await authenticate(next);
+});
 
 // PUT requests
 router.put('/admin-settings', company.updateSettings);
@@ -34,5 +35,6 @@ router.put('/catalog', company.editItem);
 
 // DEL requests
 router.delete('/catalog', company.delItem);
+router.delete('/user', company.delUser);
 
 module.exports = router;

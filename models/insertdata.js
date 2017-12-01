@@ -36,11 +36,6 @@ async function addUser (obj) {
         const id = await User.findOne({email: newUser.email}, '_id');
         //After I saved the new user in the db, I send an email to confirm the registration
         await mailer(newUser,id);
-        //I look for the company where we want the user to be added and I push his id
-        const company = await Company.findOne({name: 'McClure - Buckridge'}, 'usersId'); //newUser.company
-        company.usersId.push(id);
-        const updatedCompany = new Company(company);
-        await updatedCompany.save();
       return true;
     } else
       return false;
@@ -68,6 +63,24 @@ async function editUser (user) {
   }
 }
 
+const delUser = async (companyEmail, userId) => {
+  try {
+    let company = new Company();
+    company = await Company.findOne({email: company.email});
+    for (let i = 0; i < company[0].userId.length; i++) {
+      if (company[0].usersId[i]._id == userId.id) {
+        company[0].userId[i].splice(i,1);
+        await company[0].save();
+        return true;
+      }
+    }
+
+  } catch (e) {
+    console.error(e);
+    return 'err'
+  }
+}
+
 async function signup (user, urlId) {
   let oldUserInfo = await User.findOne({email: user.email});
   if (!oldUserInfo) return null;
@@ -78,12 +91,19 @@ async function signup (user, urlId) {
   //settings from the sign up page
   if (oldUserInfo.profilePic || oldUserInfo.password)
     return false;
+
   let newProfile = new User(oldUserInfo);
   await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain
   newProfile.profilePic = user.profilePic;
   newProfile.password = bcrypt.hashSync(user.password, 10);
   await newProfile.save();
-
+  //I moved this part in signup because we want to add the id of the user in the company db only after we are
+  //sure that the user has successfully signed up
+  //I look for the company where we want the user to be added and I push his id
+  const company = await Company.findOne({email: user.company}, 'usersId'); //newUser.company
+  company.usersId.push(id);
+  const updatedCompany = new Company(company);
+  await updatedCompany.save();
   return true;
 }
 
@@ -94,6 +114,15 @@ const getCompanyInfo = async (info) => {
       return settings;
     } else
       return false;
+  } catch (e) {
+    throw e;
+  }
+}
+
+const getUserInfo = async (info) => {
+  try {
+    const userInfo = await User.find({email: info.email});
+    (userInfo) ? userInfo : false;
   } catch (e) {
     throw e;
   }
@@ -148,5 +177,7 @@ module.exports = {
   signup,
   getSettings,
   editSettings,
-  getCompanyInfo
+  getCompanyInfo,
+  getUserInfo,
+  delUser,
 }

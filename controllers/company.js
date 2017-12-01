@@ -44,6 +44,17 @@ async function delItem (ctx) {
   }
 }
 
+const delUser = async (ctx) => {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    await Settings.delUser('rodrick_schneider@gmail.com', {id: '5a20209cbc98a20eef1bf178'}) //to be replaced with ctx.request.body
+    ctx.status = 204;
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
 const editItem = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
@@ -71,6 +82,10 @@ async function getCompanyInfo (ctx) {
   data ? ctx.response.body = data : ctx.status = 404;
 }
 
+async function getUserInfo (ctx) {
+  //a specific user or all of them?
+}
+
 async function getSettings (ctx) {
   const data = await Settings.getSettings(ctx.request.body);
   data ? ctx.response.body = data : ctx.status = 404;
@@ -89,5 +104,7 @@ module.exports = {
   editItem,
   getSettings,
   updateSettings,
-  getCompanyInfo
+  getCompanyInfo,
+  getUserInfo,
+  delUser,
 }
