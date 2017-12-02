@@ -23,6 +23,7 @@ module.exports = function sendEmail (userData, id, ) {
     });
 
     // setup email data with unicode symbols
+    console.log('EMAIL ', userData);
     let mailOptions = {
       from: '"Zendama 👻" <no-reply@zendama.com>', // sender address
       to: `${userData.email}`, // list of receivers
@@ -32,7 +33,7 @@ module.exports = function sendEmail (userData, id, ) {
         You received an invitation to join Zendama
         `,
       html: ` Click here to join
-        <a href='http://localhost:4200/signup-user?user-id=${id._id}'>http://localhost:4200/signup-user?user-id=${id._id}</a>
+        <a href='http://localhost:3006/usersignup?user-id=${id._id}'>http://localhost:4200/signup-user?user-id=${id._id}</a>
       `
     };
 

@@ -7,11 +7,13 @@ const Domo = require('../zendomo.js');
 const mailer = require('../server/mailer/mailer');
 
 async function addCompany (newCompanyInfo) {
+  console.log('company data', newCompanyInfo);
   try {
-    const company = await Company.find({email: newCompanyInfo.email.toLowerCase()})
+    const company = await Company.find({email: newCompanyInfo.email.toLowerCase()});
     if (!company.length) {
       const newCompany = new Company(newCompanyInfo);
       const hash = bcrypt.hashSync(newCompanyInfo.password, 10);
+      newCompany.isAdmin = true;
       newCompany.password = hash;
       await newCompany.save();
       return true;
@@ -22,14 +24,14 @@ async function addCompany (newCompanyInfo) {
   }
 }
 
-async function addUser (companyEmail, obj) {
+async function addUser (companyEmail, userInfo) {
   try {
-    const user = await User.find({email: obj().email});
+    const user = await User.find({email: userInfo.email});
     //I check if the user exists in the user collection
     if (!user.length) {
-      const newUser = new User(obj());
-      const hash = bcrypt.hashSync(obj().password, 10);
-        newUser.password = hash;
+      const newUser = new User(userInfo);
+      //const hash = bcrypt.hashSync(userInfo.password, 10);
+        //newUser.password = hash;
         newUser.company = companyEmail;
         await newUser.save();
         //I need to grab the id of the user just saved
@@ -81,24 +83,37 @@ const delUser = async (companyEmail, userId) => {
 }
 
 async function signup (user, urlId) {
+  console.log('user', user);
   let oldUserInfo = await User.findOne({email: user.email});
+  console.log('old user info', oldUserInfo);
+  console.log('checkpoint1', oldUserInfo);
   if (!oldUserInfo) return null;
+  console.log('who is undefined? ', oldUserInfo, urlId);
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
     return false;
   }
-  //If the following values are not empty it means that the user tried to change
-  //settings from the sign up page
-  if (oldUserInfo.profilePic || oldUserInfo.password)
+  //If there is already a password stored, it means that the account
+  //has already signed up
+  if (oldUserInfo.password)
     return false;
   let newProfile = new User(oldUserInfo);
   await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain
-  newProfile.profilePic = user.profilePic;
+  newProfile.firstName = user.firstName;
+  newProfile.username = user.username;
   newProfile.password = bcrypt.hashSync(user.password, 10);
+  newProfile.profilePic = user.profilePic;
+  newProfile.hashkey = null;
+  newProfile.isAdmin = false;
+  newProfile.availableCurrency = user.availableCurrency;
+  newProfile.receivedCurrency = user.receivedCurrency;
+  newProfile.createdOn = Date.now();
   await newProfile.save();
-  //I moved this part in signup because we want to add the id of the user in the company db only after we are
+  //I want to add the id of the user in the company db only after we are
   //sure that the user has successfully signed up
   //I look for the company where we want the user to be added and I push his id
+  console.log('new profile', newProfile);
   const company = await Company.findOne({email: user.company}, 'usersId'); //newUser.company
+  console.log('company found', company);
   company.usersId.push(id);
   const updatedCompany = new Company(company);
   await updatedCompany.save();
@@ -108,10 +123,7 @@ async function signup (user, urlId) {
 const getCompanyInfo = async (info) => {
   try {
     const settings = await Company.find({email: info.email});
-    if (settings) {
-      return settings;
-    } else
-      return false;
+    return (settings) ? settings : false;
   } catch (e) {
     throw e;
   }
@@ -120,9 +132,9 @@ const getCompanyInfo = async (info) => {
 const getUserInfo = async (companyEmail, userId) => {
   try {
     let company = new Company();
-    company = await Company.find({})
+    company = await Company.find({});
     const userInfo = await User.find({id: userId.id});
-    (userInfo) ? userInfo : false;
+    return (userInfo) ? userInfo : false;
   } catch (e) {
     throw e;
   }

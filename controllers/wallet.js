@@ -1,7 +1,9 @@
 const Transaction = require('../models/transactions');
+const adminPrivilege = require('../server/auth/usertype');
 
 async function addFunds (ctx) {
-  const data = await Transaction.addFunds(ctx.request.body.id, ctx.request.body.ammount); // to be replaced with ctx.request.body
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const data = await Transaction.addFunds(ctx.request.body.id, ctx.request.body.ammount, companyEmail); // to be replaced with ctx.request.body
   data ? ctx.status = 200 : ctx.body = 'Operation failed';
 }
 

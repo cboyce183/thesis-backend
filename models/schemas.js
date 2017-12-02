@@ -42,7 +42,17 @@ const AdminSchema = mongoose.Schema({
   catalog: [ CatalogSchema ],
   createdOn: Number, //timestamp ??????????????????? what
   address: String,
-  color: String
+  color: String,
+  history:
+    [
+      {
+        from: {},
+        to: {},
+        amount: Number,
+        transactionType: String,
+        date: Date,
+      }
+    ]
 });
 
 const TokenSchema = mongoose.Schema({

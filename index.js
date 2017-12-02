@@ -16,7 +16,7 @@ app
   .use(koaJwt({secret: 'xxx'})
     .unless({path: [
       '/',
-      '/add-company',
+      '/company',
       '/add-user',
       '/login',
       '/signup-user',

@@ -4,7 +4,7 @@ const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 const check = require('./common.js');
 const addCompany = async (ctx) => {
-  const res = await Settings.addCompany(randomCompany.company()); //ctx.request.body
+  const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
   (res) ? ctx.status = 201 : ctx.status = 409; //409:conflict, it means that there is already an account registred with the given email
 }
 
@@ -15,6 +15,8 @@ const addItem = async (ctx) => {
      const product = ctx.request.body;
     //I check the price of the product
     if (check.price(product.price) === 422) return ctx.status = 422;
+    //I truncate the number in case I receive a decimal number
+    product.price = Math.trunc(product.price);
     //I check if the content sent in the request body is a product or a service
     if (product.isService) {
       return await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', product.isService) // //to be replaced with ctx.request.body and companyEmail

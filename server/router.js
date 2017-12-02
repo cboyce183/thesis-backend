@@ -21,7 +21,6 @@ router.get('/catalog', company.getItems);
 router.get('/company', company.getCompanyInfo);
 router.get('/settings', company.getSettings);
 router.get('/user', company.getUserInfo);
-router.get('/signup-user', user.signupRequest);
 router.get('/login', async (next) => {
   await authenticate(next);
 });
