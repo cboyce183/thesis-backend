@@ -3,8 +3,10 @@ const randomUser = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
 
 const add = async (ctx) => {
+  console.log('controller, adding a user...');
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  console.log('isAdmin?', isAdmin, companyEmail);
   if (isAdmin) {
     const res = await setUser.addUser(companyEmail, ctx.request.body)
     return (res) ? ctx.status = 200 : ctx.status = 409;

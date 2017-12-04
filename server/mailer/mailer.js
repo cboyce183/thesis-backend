@@ -33,7 +33,7 @@ module.exports = function sendEmail (userData, id, ) {
         You received an invitation to join Zendama
         `,
       html: ` Click here to join
-        <a href='http://localhost:3006/usersignup?user-id=${id._id}'>http://localhost:4200/signup-user?user-id=${id._id}</a>
+        <a href='http://localhost:3000/usersignup?user-id=${id._id}'>http://localhost:3000/signup-user?user-id=${id._id}</a>
       `
     };
 

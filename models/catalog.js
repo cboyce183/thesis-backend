@@ -7,6 +7,7 @@ const Domo = require('../zendomo.js');
 
 
 const add = async (product, companyEmail, isService) => {
+  console.log('add item', product, companyEmail, isService);
   let company = new Company(); //I need to check if I really need this
   company = await Company.find({email: companyEmail});
   let newProduct = new Catalog();
@@ -22,6 +23,7 @@ const add = async (product, companyEmail, isService) => {
 const buy = async (userEmail, idItem, infoProduct) => { //Need to be tested
   const user = User.find({email: userEmail});
   Domo.purchase(user[0]._id, infoProduct.price);
+  //now store arguments
 }
 
 const del = async (companyEmail, companyId) => {
@@ -37,6 +39,7 @@ const del = async (companyEmail, companyId) => {
 }
 
 const get = async (companyEmail) => {
+  console.log('into catalog...', companyEmail);
   const company = await Company.find({email: companyEmail});
   return {catalog: company[0].catalog};
 }

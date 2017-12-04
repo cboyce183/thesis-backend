@@ -18,7 +18,7 @@ router.post('/catalog/product/', user.buyItem); //Buy items
 
 // GET requests
 router.get('/catalog', company.getItems);
-router.get('/company', company.getCompanyInfo);
+router.get('/company', company.getCompanyPage);
 router.get('/settings', company.getSettings);
 router.get('/user', company.getUserInfo);
 router.get('/login', async (next) => {

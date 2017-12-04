@@ -25,13 +25,12 @@ async function addCompany (newCompanyInfo) {
 }
 
 async function addUser (companyEmail, userInfo) {
+  console.log('user info', userInfo, 'compan email', companyEmail);
   try {
     const user = await User.find({email: userInfo.email});
     //I check if the user exists in the user collection
     if (!user.length) {
       const newUser = new User(userInfo);
-      //const hash = bcrypt.hashSync(userInfo.password, 10);
-        //newUser.password = hash;
         newUser.company = companyEmail;
         await newUser.save();
         //I need to grab the id of the user just saved
@@ -86,7 +85,6 @@ async function signup (user, urlId) {
   console.log('user', user);
   let oldUserInfo = await User.findOne({email: user.email});
   console.log('old user info', oldUserInfo);
-  console.log('checkpoint1', oldUserInfo);
   if (!oldUserInfo) return null;
   console.log('who is undefined? ', oldUserInfo, urlId);
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
@@ -97,33 +95,78 @@ async function signup (user, urlId) {
   if (oldUserInfo.password)
     return false;
   let newProfile = new User(oldUserInfo);
-  await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain
   newProfile.firstName = user.firstName;
   newProfile.username = user.username;
   newProfile.password = bcrypt.hashSync(user.password, 10);
   newProfile.profilePic = user.profilePic;
   newProfile.hashkey = null;
   newProfile.isAdmin = false;
+  newProfile.lastName = user.lastName;
   newProfile.availableCurrency = user.availableCurrency;
   newProfile.receivedCurrency = user.receivedCurrency;
   newProfile.createdOn = Date.now();
   await newProfile.save();
+  await Domo.createUser(newProfile._id, newProfile.firstName, newProfile.lastName); //adds user to blockchain
   //I want to add the id of the user in the company db only after we are
   //sure that the user has successfully signed up
   //I look for the company where we want the user to be added and I push his id
   console.log('new profile', newProfile);
-  const company = await Company.findOne({email: user.company}, 'usersId'); //newUser.company
+  const company = await Company.findOne({email: oldUserInfo.company}, 'usersId'); //newUser.company
   console.log('company found', company);
-  company.usersId.push(id);
+  console.log('saving this id', newProfile._id);
+  company.usersId.push(newProfile._id);
   const updatedCompany = new Company(company);
   await updatedCompany.save();
   return true;
 }
 
-const getCompanyInfo = async (info) => {
+// const getCompanyInfo = async (info) => {
+//   console.log('info received:', info);
+//   try {
+//     const settings = await Company.find({email: info.email});
+//     return (settings) ? settings : false;
+//   } catch (e) {
+//     throw e;
+//   }
+// }
+
+const getCompanyPage = async (companyEmail) => {
+  console.log('getting company page...', companyEmail);
   try {
-    const settings = await Company.find({email: info.email});
-    return (settings) ? settings : false;
+    const companyInfo = await Company.find({email: companyEmail});
+    const financialInfo = await Domo.getAllUsers();
+    console.log('financial info', financialInfo);
+    const totalTokens = financialInfo.reduce((acc, user) => {
+      if (user.tradeId !== companyInfo._id) {
+        return acc + user.tokens;
+      } else {
+        return acc;
+      }
+    },0);
+    const panelCompanyInfo = {
+      companyName: companyInfo[0].name,
+      catalogN: companyInfo[0].catalog.length,
+      usersIdN: companyInfo[0].usersId.length,
+      totalGiven: totalTokens,
+      isAdmin: true
+    }
+    return (companyInfo) ? panelCompanyInfo : false;
+  } catch (e) {
+    throw e;
+  }
+}
+
+const getUserPage = async (userEmail) => {
+  try {
+    const userInfo = await User.find({email: userEmail});
+
+    const financialInfo = await Domo.getOneUser(userInfo[0]._id);
+    const panelUserInfo = {
+      username: userInfo[0].username,
+      availableCurrency: financialInfo.credits,
+      receivedCurrency: financialInfo.tokens
+    }
+    return (userInfo) ? panelUserInfo : false;
   } catch (e) {
     throw e;
   }
@@ -189,7 +232,8 @@ module.exports = {
   signup,
   getSettings,
   editSettings,
-  getCompanyInfo,
+  getCompanyPage,
   getUserInfo,
   delUser,
+  getUserPage,
 }

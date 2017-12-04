@@ -4,6 +4,7 @@ const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 const check = require('./common.js');
 const addCompany = async (ctx) => {
+
   const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
   (res) ? ctx.status = 201 : ctx.status = 409; //409:conflict, it means that there is already an account registred with the given email
 }
@@ -19,9 +20,9 @@ const addItem = async (ctx) => {
     product.price = Math.trunc(product.price);
     //I check if the content sent in the request body is a product or a service
     if (product.isService) {
-      return await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', product.isService) // //to be replaced with ctx.request.body and companyEmail
+      return await catalog.add(ctx.request.body, companyEmail, product.isService)
     } else if (!product.isService) {
-      await catalog.add({name: 'sexy cat'}, 'rodrick_schneider@gmail.com', product.isService) //to be replaced with ctx.request.body and companyEmail
+      await catalog.add(ctx.request.body, companyEmail, product.isService) //to be replaced with ctx.request.body and companyEmail
       return ctx.status = 201;
     } else {
       //Probably useless check, it can't be undefined, but you never know... black magic is always behind the corner
@@ -35,7 +36,7 @@ const delItem = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    await catalog.del('rodrick_schneider@gmail.com',{id: '5a20209cbc98a20eef1bf178'}) //to be replaced with ctx.request.body
+    await catalog.del(companyEmail,ctx.request.body) //to be replaced with ctx.request.body
     ctx.status = 204;
   } else {
     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
@@ -46,7 +47,7 @@ const delUser = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    await Settings.delUser('rodrick_schneider@gmail.com', {id: '5a20209cbc98a20eef1bf178'}) //to be replaced with ctx.request.body
+    await Settings.delUser(companyEmail, ctx.request.body) //to be replaced with ctx.request.body
     ctx.status = 204;
   } else {
     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
@@ -65,19 +66,30 @@ const editItem = async (ctx) => {
 }
 
 const getItems = async (ctx) => {
+  console.log('in controller getting items');
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
     ctx.status = 201;
-    ctx.response.body = await catalog.get('olen.mosciski78@gmail.com'); //to be replaced with companyEmail
+    ctx.response.body = await catalog.get(companyEmail);
   } else {
     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
 
-const getCompanyInfo = async (ctx) => {
-  const data = await Settings.getCompanyInfo(ctx.request.body);
-  data ? ctx.response.body = data : ctx.status = 404;
+const getCompanyPage = async (ctx) => {
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    console.log('is admin');
+    const data = await Settings.getCompanyPage(email);
+    data ? ctx.response.body = data : ctx.status = 404;
+  } else if (!isAdmin) {
+    console.log('not admin', email);
+    const data = await Settings.getUserPage(email);
+    console.log('data',data);
+    data ? ctx.response.body = data : ctx.status = 404;
+  }
 }
 
 const getUserInfo = async (ctx) => {
@@ -109,7 +121,7 @@ module.exports = {
   editItem,
   getSettings,
   updateSettings,
-  getCompanyInfo,
+  getCompanyPage,
   getUserInfo,
   delUser,
 }

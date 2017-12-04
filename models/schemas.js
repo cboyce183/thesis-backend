@@ -15,15 +15,17 @@ const UserSchema = mongoose.Schema({
   availableCurrency: Number,
   receivedCurrency: Number,
   company: String,
+  position:String,
   createdOn: Number //timestamp ?? or date ??
 });
 
 const CatalogSchema = mongoose.Schema({
   name: String,
+  description: String,
   picture: String,
   value: Number,
   isService: Boolean,
-  schedule: Date, //???????????????????? what
+  schedule: {}, //???????????????????? what
   createdOn: Number //timestamp
 });
 
