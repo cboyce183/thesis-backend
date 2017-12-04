@@ -1,6 +1,7 @@
 const setUser = require('../models/insertdata');
 const randomUser = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
+const catalog = require('../models/catalog');
 
 const add = async (ctx) => {
   console.log('controller, adding a user...');
@@ -16,10 +17,11 @@ const add = async (ctx) => {
 }
 
 const buyItem = async (ctx) => {
+  const urlId = ctx.url.match(/\/(\w+)$/)[1];
   const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (!isAdmin) {
-    const res = await catalog.buyItem(userEmail, ctx.request.query.id, ctx.request.body);
+    const res = await catalog.buy(userEmail, urlId, ctx.request.body);
     (res) ? ctx.status = 201 : ctx.body = 'ops... something went wrong';
   } else {
     ctx.status = 403; //forbidden, in case the admin tries to buy an item

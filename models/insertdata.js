@@ -164,7 +164,8 @@ const getUserPage = async (userEmail) => {
     const panelUserInfo = {
       username: userInfo[0].username,
       availableCurrency: financialInfo.credits,
-      receivedCurrency: financialInfo.tokens
+      receivedCurrency: financialInfo.tokens,
+      isAdmin: false,
     }
     return (userInfo) ? panelUserInfo : false;
   } catch (e) {

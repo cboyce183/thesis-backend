@@ -14,7 +14,7 @@ router.post('/company', company.addCompany);
 router.post('/user', user.add);
 router.post('/signup-user', user.signup); //It has to be a put request, has to be reviewed
 router.post('/catalog', company.addItem); //Add items to the catalog
-router.post('/catalog/product/', user.buyItem); //Buy items
+router.post(/\/catalog\/product\/.*$/, user.buyItem); //Buy items
 
 // GET requests
 router.get('/catalog', company.getItems);
@@ -34,7 +34,7 @@ router.put('/admin-fund', wallet.addFunds);
 router.put('/catalog', company.editItem);
 
 // DEL requests
-router.delete('/catalog', company.delItem); //delete has no body, change in ctx.request.query
+router.delete(/\/catalog\/.*$/, company.delItem); //delete has no body, change in ctx.request.query
 router.delete('/user', company.delUser);
 
 module.exports = router;

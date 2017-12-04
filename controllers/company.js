@@ -20,6 +20,7 @@ const addItem = async (ctx) => {
     product.price = Math.trunc(product.price);
     //I check if the content sent in the request body is a product or a service
     if (product.isService) {
+      ctx.status = 200;
       return await catalog.add(ctx.request.body, companyEmail, product.isService)
     } else if (!product.isService) {
       await catalog.add(ctx.request.body, companyEmail, product.isService) //to be replaced with ctx.request.body and companyEmail
@@ -33,10 +34,13 @@ const addItem = async (ctx) => {
 }
 
 const delItem = async (ctx) => {
+  console.log('context', ctx);
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    await catalog.del(companyEmail,ctx.request.body) //to be replaced with ctx.request.body
+    const urlId = ctx.url.match(/\/(\w+)$/)[1];
+    console.log('url',urlId);
+    await catalog.del(companyEmail,urlId) //to be replaced with ctx.request.body
     ctx.status = 204;
   } else {
     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
@@ -67,13 +71,17 @@ const editItem = async (ctx) => {
 
 const getItems = async (ctx) => {
   console.log('in controller getting items');
-  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+
   if (isAdmin) {
     ctx.status = 201;
-    ctx.response.body = await catalog.get(companyEmail);
+    ctx.response.body = await catalog.get(userEmail, isAdmin);
+  } else if (!isAdmin) {
+    ctx.status = 201;
+    ctx.response.body = await catalog.get(userEmail, isAdmin);
   } else {
-    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+    ctx.status = 403;
   }
 }
 

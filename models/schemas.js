@@ -23,7 +23,7 @@ const CatalogSchema = mongoose.Schema({
   name: String,
   description: String,
   picture: String,
-  value: Number,
+  price: Number,
   isService: Boolean,
   schedule: {}, //???????????????????? what
   createdOn: Number //timestamp
