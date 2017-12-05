@@ -16,15 +16,9 @@ app
   .use(koaJwt({secret: 'xxx'})
     .unless({path: [
       '/',
-      '/add-company',
-      '/add-user',
       '/login',
-      '/signup-user',
-      '/transfer',
-      '/admin-fund',
-      '/admin-tip',
-      '/settings',
-      '/admin-settings'
+      new RegExp('\/signup-user.*','i'),
+      '/favicon.ico',
     ]}))
   .use(router.routes())
   .listen(4200);

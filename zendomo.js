@@ -6,7 +6,7 @@ const fetch = require('isomorphic-fetch');
 
 // === create a user (when they sign up) ===
 const createUser = async (id, firstName, lastName) => {
-    const first = await fetch('http://192.168.0.35:3000/api/Trader', {
+    const first = await fetch('http://localhost:3000/api/Trader', {
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -28,7 +28,7 @@ const createUser = async (id, firstName, lastName) => {
 
 // === get one user, filtered by id ===
 const getOneUser = async (id) => {
-    const result = await fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+    const result = await fetch('http://localhost:3000/api/Trader/' + id, {
         headers: {
             'Accept': 'application/json',
         },
@@ -41,7 +41,7 @@ const getOneUser = async (id) => {
 
 // === delete one user, filtered by id ===
 const deleteOneUser = async (id) => {
-    fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+    fetch('http://localhost:3000/api/Trader/' + id, {
         headers: {
             'Accept': 'application/json',
         },
@@ -54,13 +54,13 @@ const deleteOneUser = async (id) => {
 
 // === edit one user, filtered by id ===
 const editOneUser = async (id, firstName, lastName) => {
-    fetch('http://192.168.0.35:3000/api/Trader/' + id, {
+    fetch('http://localhost:3000/api/Trader/' + id, {
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'            
+            'Content-Type': 'application/json'
         },
         method: 'PUT',
-        credentials: 'same-origin',        
+        credentials: 'same-origin',
         body: JSON.stringify({
             $class: "org.zendomo.biznet.Trader",
             tradeId: id,
@@ -77,14 +77,17 @@ const editOneUser = async (id, firstName, lastName) => {
 
 // === get all users (admin tool) ===
 const getAllUsers = async () => {
-    const users = fetch('http://192.168.0.35:3000/api/Trader', {
+    const users = await fetch('http://localhost:3000/api/Trader', {
         headers: {
             'Accept': 'application/json',
         },
         method: 'GET',
     })
     .then(res => res.json())
-    .then(res => console.log('<------Users from zendomo------>\n', res));
+    .then(res => {
+      console.log('<------Users from zendomo------>\n', res)
+      return res
+    });
     return users;
 }
 
@@ -93,13 +96,13 @@ const transferFunds = async (senderID, receiverID, ammount) => {
     const sender = await getOneUser(senderID);
     const receiver = await getOneUser(receiverID);
     if (sender.tokens > ammount) {
-        const doFirst = await fetch('http://192.168.0.35:3000/api/Trader/' + senderID, {
+        const doFirst = await fetch('http://localhost:3000/api/Trader/' + senderID, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             method: 'PUT',
-            credentials: 'same-origin',        
+            credentials: 'same-origin',
             body: JSON.stringify({
                 $class: "org.zendomo.biznet.Trader",
                 tradeId: sender.id,
@@ -109,13 +112,13 @@ const transferFunds = async (senderID, receiverID, ammount) => {
                 credits: sender.credits
             })
         });
-        const thenDo = await fetch('http://192.168.0.35:3000/api/Trader/' + receiverID, {
+        const thenDo = await fetch('http://localhost:3000/api/Trader/' + receiverID, {
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'            
+                'Content-Type': 'application/json'
             },
             method: 'PUT',
-            credentials: 'same-origin',        
+            credentials: 'same-origin',
             body: JSON.stringify({
                 $class: "org.zendomo.biznet.Trader",
                 tradeId: receiver.id,
@@ -132,10 +135,10 @@ const transferFunds = async (senderID, receiverID, ammount) => {
 }
 
 // === admin tool to add funds to a person ===
-const addFunds = async (id, ammount) => { 
+const addFunds = async (id, ammount) => {
     const person = await getOneUser(id)
     .then( response => {
-        fetch('http://192.168.0.35:3000/api/Trader/' + response.tradeId, {
+        fetch('http://localhost:3000/api/Trader/' + response.tradeId, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -157,10 +160,10 @@ const addFunds = async (id, ammount) => {
 }
 
 // === admin tool to tip a user ===
-const tipUser = async (id, ammount) => { 
+const tipUser = async (id, ammount) => {
     const person = await getOneUser(id)
     .then( response => {
-        fetch('http://192.168.0.35:3000/api/Trader/' + response.tradeId, {
+        fetch('http://localhost:3000/api/Trader/' + response.tradeId, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -183,12 +186,12 @@ const tipUser = async (id, ammount) => {
 
 
 // === user tool to purchase a product/service ===
-const purchase = async (id, price) => { 
+const purchase = async (id, price) => {
     let success= false;
     const person = await getOneUser(id)
     .then( response => {
         if (response.credits >= price) {
-            fetch('http://192.168.0.35:3000/api/Trader/' + response.tradeId, {
+            fetch('http://localhost:3000/api/Trader/' + response.tradeId, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

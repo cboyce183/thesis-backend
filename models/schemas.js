@@ -15,15 +15,17 @@ const UserSchema = mongoose.Schema({
   availableCurrency: Number,
   receivedCurrency: Number,
   company: String,
+  position:String,
   createdOn: Number //timestamp ?? or date ??
 });
 
 const CatalogSchema = mongoose.Schema({
   name: String,
+  description: String,
   picture: String,
-  value: Number,
+  price: Number,
   isService: Boolean,
-  schedule: Date, //???????????????????? what
+  schedule: {},
   createdOn: Number //timestamp
 });
 
@@ -42,7 +44,17 @@ const AdminSchema = mongoose.Schema({
   catalog: [ CatalogSchema ],
   createdOn: Number, //timestamp ??????????????????? what
   address: String,
-  color: String
+  color: {},
+  history:
+    [
+      {
+        from: {},
+        to: {},
+        amount: Number,
+        transactionType: String,
+        date: Date,
+      }
+    ]
 });
 
 const TokenSchema = mongoose.Schema({

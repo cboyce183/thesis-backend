@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 
   // Generate test SMTP service account from ethereal.email
   // Only needed if you don't have a real mail account for testing
-module.exports = function sendEmail (userData, id) {
+module.exports = function sendEmail (userData, id, ) {
   console.log('userdata received in the mailer', userData);
   nodemailer.createTestAccount((err, account) => {
 
@@ -23,13 +23,17 @@ module.exports = function sendEmail (userData, id) {
     });
 
     // setup email data with unicode symbols
+    console.log('EMAIL ', userData);
     let mailOptions = {
-      from: '"Fred Foo 👻" <foo@blurdybloop.com>', // sender address
-      to: `${userData.email}, otrebor619@gmail.com`, // list of receivers
-      subject: 'Hello ✔', // Subject line
-      text: 'Hello world?', // plain text body
-      html: ` here the link
-        <a href='http://localhost:4200/signup-user?user-id=${id._id}'>http://localhost:4200/signup-user?user-id=${id._id}</a>
+      from: '"Zendama 👻" <no-reply@zendama.com>', // sender address
+      to: `${userData.email}`, // list of receivers
+      subject: 'NAMEOFTHECOMPANY added you ✔', // Subject line
+      text: `
+        Hello ${userData.name},
+        You received an invitation to join Zendama
+        `,
+      html: ` Click here to join
+        <a href='http://localhost:3000/usersignup?user-id=${id._id}'>http://localhost:3000/signup-user?user-id=${id._id}</a>
       `
     };
 

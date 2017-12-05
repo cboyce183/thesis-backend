@@ -11,7 +11,9 @@ async function checkUserType (token) {
 }
 
 async function userEmail (token) {
+  console.log('token', token);
   const email = await Token.find({token:token});
+  console.log('EMAIL', email);
   if (email.length)
     return email[0].email;
   return 'not found'
