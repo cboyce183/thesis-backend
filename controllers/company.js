@@ -117,8 +117,14 @@ const getSettings = async (ctx) => {
 }
 
 const updateSettings = async (ctx) => {
-  const data = await Settings.editSettings(ctx.request.body);
-  data ? ctx.status = 200 : ctx.status = 418;
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const data = await Settings.editSettings(ctx.request.body);
+    console.log('data', data);
+    data ? ctx.status = 200 : ctx.status = 418; //charlie.........
+  }
+
 }
 
 module.exports = {

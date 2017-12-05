@@ -25,7 +25,7 @@ const CatalogSchema = mongoose.Schema({
   picture: String,
   price: Number,
   isService: Boolean,
-  schedule: {}, //???????????????????? what
+  schedule: {},
   createdOn: Number //timestamp
 });
 
@@ -44,7 +44,7 @@ const AdminSchema = mongoose.Schema({
   catalog: [ CatalogSchema ],
   createdOn: Number, //timestamp ??????????????????? what
   address: String,
-  color: String,
+  color: {},
   history:
     [
       {

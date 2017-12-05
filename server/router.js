@@ -26,7 +26,7 @@ router.get('/login', async (next) => {
 });
 
 // PUT requests
-router.put('/admin-settings', company.updateSettings);
+router.put('/company', company.updateSettings);
 router.put('/user', user.edit);
 router.put('/admin-tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);

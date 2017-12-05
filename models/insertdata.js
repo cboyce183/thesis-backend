@@ -148,7 +148,10 @@ const getCompanyPage = async (companyEmail) => {
       catalogN: companyInfo[0].catalog.length,
       usersIdN: companyInfo[0].usersId.length,
       totalGiven: totalTokens,
-      isAdmin: true
+      picture: companyInfo[0].picture,
+      weeklyAllow: companyInfo[0].weeklyAllow,
+      address: companyInfo[0].address,
+      isAdmin: true,
     }
     return (companyInfo) ? panelCompanyInfo : false;
   } catch (e) {
@@ -184,24 +187,24 @@ const getUserInfo = async (companyEmail, userId) => {
   }
 }
 
-const getSettings = async (info) => {
-  try {
-    const settings = await Company.find({email: info.email});
-    if (settings) {
-      return {
-        name: settings.name,
-        coinName: settings.coinName,
-        color: settings.color,
-        logo: settings.logo,
-        name: settings.name,
-        address: settings.address
-      };
-    } else
-      return false;
-  } catch (e) {
-    throw e;
-  }
-}
+// const getSettings = async (info) => {
+//   try {
+//     const settings = await Company.find({email: info.email});
+//     if (settings) {
+//       return {
+//         name: settings.name,
+//         coinName: settings.coinName,
+//         color: settings.color,
+//         logo: settings.logo,
+//         name: settings.name,
+//         address: settings.address
+//       };
+//     } else
+//       return false;
+//   } catch (e) {
+//     throw e;
+//   }
+// }
 
 const editSettings = async (info) => { //?? have to test this ??//
   try {
@@ -231,7 +234,7 @@ module.exports = {
   addUser,
   editUser,
   signup,
-  getSettings,
+  //getSettings,
   editSettings,
   getCompanyPage,
   getUserInfo,
