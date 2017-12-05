@@ -21,6 +21,7 @@ router.get('/catalog', company.getItems);
 router.get('/company', company.getCompanyPage);
 router.get('/settings', company.getSettings);
 router.get('/user', company.getUserInfo);
+router.get('/tip', company.listUsers);
 router.get('/login', async (next) => {
   await authenticate(next);
 });
@@ -28,7 +29,7 @@ router.get('/login', async (next) => {
 // PUT requests
 router.put('/company', company.updateSettings);
 router.put('/user', user.edit);
-router.put('/admin-tip', wallet.tipUser);
+router.put('/tip', wallet.tipUser);
 router.put('/transfer', wallet.transferFunds);
 router.put('/admin-fund', wallet.addFunds);
 router.put('/catalog', company.editItem);

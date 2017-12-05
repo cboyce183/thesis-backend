@@ -34,7 +34,7 @@ module.exports = async function (ctx) {
 }
 
 async function sign (authenticated, ctx, email, admin) {
-  console.log('authentication:', authenticated);
+  console.log('authentication:', authenticated, email, admin);
     if (authenticated) {
       //I send the token in the body
       const token = ctx.body = {

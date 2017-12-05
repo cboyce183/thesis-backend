@@ -18,6 +18,7 @@ async function addFunds (id, ammount, companyEmail) {
   const userInfo = User.find({_id: id});
   console.log('history generated', history);
   try {
+
       await Domo.addFunds(id, ammount);
       company[0].history.push(history(companyInfo, userInfo));
       await company[0].save();
@@ -29,7 +30,7 @@ async function addFunds (id, ammount, companyEmail) {
 
 async function transferFunds (senderID, receiverID, ammount) {
   try {
-      await Domo.transferFunds(senderID, receiverID, ammount);
+      await Domo.transferFunds(senderID, receiverID, parseInt(ammount));
       return true;
   } catch (e) {
       throw e;
@@ -37,8 +38,10 @@ async function transferFunds (senderID, receiverID, ammount) {
 }
 
 async function tipUser (id, ammount) {
+  console.log('id', id, 'amount', ammount);
   try {
-      await Domo.tipUser(id, ammount);
+    console.log('ADDING FUNDS', ammount);
+      await Domo.tipUser(id, parseInt(ammount));
       return true;
   } catch (e) {
       throw e;

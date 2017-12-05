@@ -6,8 +6,9 @@ const User = mongoose.model('Users', Schemas.UserSchema);
 const Domo = require('../zendomo.js');
 const mailer = require('../server/mailer/mailer');
 const Token = mongoose.model('Tokens', Schemas.TokenSchema);
+
 async function addCompany (newCompanyInfo) {
-  console.log('company data', newCompanyInfo);
+  console.log('creating new company...');
   try {
     const company = await Company.find({email: newCompanyInfo.email.toLowerCase()});
     if (!company.length) {
@@ -88,7 +89,6 @@ const delUser = async (companyEmail, userId) => { //need to be tested yet
 async function signup (user, urlId) {
   console.log('user', user);
   let oldUserInfo = await User.findOne({email: user.email});
-  console.log('old user info', oldUserInfo);
   if (!oldUserInfo) return null;
   console.log('who is undefined? ', oldUserInfo, urlId);
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
@@ -121,6 +121,11 @@ async function signup (user, urlId) {
   company.usersId.push(newProfile._id);
   const updatedCompany = new Company(company);
   await updatedCompany.save();
+  const newToken = new Token();
+  newToken.email = user.email;
+  newToken.isAdmin = false;
+  console.log('new token created', newToken);
+  await newToken.save();
   return true;
 }
 
@@ -128,15 +133,17 @@ const getCompanyPage = async (companyEmail) => {
   console.log('getting company page...', companyEmail);
   try {
     const companyInfo = await Company.find({email: companyEmail});
+    const userIdList = companyInfo[0].usersId;
+    console.log('list of users', userIdList);
     const financialInfo = await Domo.getAllUsers();
+    const userList = userIdList.filter(id => (companyInfo[0].usersId.indexOf(id) !== -1))
     const totalTokens = financialInfo.reduce((acc, user) => {
-      if (user.tradeId !== companyInfo._id) {
+      if (userList.indexOf(user.tradeId) != -1) {
         return acc + user.tokens;
       } else {
         return acc;
       }
     },0);
-    console.log('company information', companyInfo);
     const panelCompanyInfo = {
       companyName: companyInfo[0].name,
       catalogN: companyInfo[0].catalog.length,
@@ -222,6 +229,9 @@ const editSettings = async (info) => { //?? have to test this ??//
     throw e;
   }
 }
+
+
+
 
 module.exports = {
   addCompany,

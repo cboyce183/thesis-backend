@@ -3,6 +3,7 @@ const randomCompany = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 const check = require('./common.js');
+const tip = require('../models/tip');
 const addCompany = async (ctx) => {
 
   const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
@@ -115,6 +116,23 @@ const updateSettings = async (ctx) => {
 
 }
 
+const listUsers = async (ctx) => {
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    console.log('admin');
+    const data = await tip.listUsersForAdmin(email, isAdmin);
+    data ? ctx.body = data : ctx.status = 404;
+  } else if (!isAdmin) {
+    console.log('not admin');
+    const data = await tip.listUsersForUser(email, isAdmin);
+    data ? ctx.body = data : ctx.status = 404;
+  } else {
+    ctx.status = 403
+  }
+
+}
+
 module.exports = {
   addCompany,
   addItem,
@@ -125,4 +143,5 @@ module.exports = {
   updateSettings,
   getCompanyPage,
   getUserInfo,
+  listUsers,
 }
