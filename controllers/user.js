@@ -55,9 +55,22 @@ const signup = async (ctx) => {
   }
 }
 
+const delUser = async (ctx) => {
+  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const urlId = ctx.url.match(/\/(\w+)$/)[1];
+    await Settings.delUser(companyEmail, urlId) //to be replaced with ctx.request.body
+    ctx.status = 204;
+  } else {
+    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
+  }
+}
+
 module.exports = {
   add,
   edit,
+  delUser,
   signup,
   buyItem,
 }

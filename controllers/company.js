@@ -3,6 +3,8 @@ const randomCompany = require('../mock/mocks');
 const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 const check = require('./common.js');
+const tip = require('../models/tip');
+const transaction = require('../models/transactions');
 const addCompany = async (ctx) => {
 
   const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
@@ -34,29 +36,17 @@ const addItem = async (ctx) => {
 }
 
 const delItem = async (ctx) => {
-  console.log('context', ctx);
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
     const urlId = ctx.url.match(/\/(\w+)$/)[1];
-    console.log('url',urlId);
-    await catalog.del(companyEmail,urlId) //to be replaced with ctx.request.body
+    await catalog.del(companyEmail,urlId)
     ctx.status = 204;
   } else {
     ctx.status = 403; //forbidden, in case the user tries to access to the admin page
   }
 }
 
-const delUser = async (ctx) => {
-  const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
-  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
-  if (isAdmin) {
-    await Settings.delUser(companyEmail, ctx.request.body) //to be replaced with ctx.request.body
-    ctx.status = 204;
-  } else {
-    ctx.status = 403; //forbidden, in case the user tries to access to the admin page
-  }
-}
 
 const editItem = async (ctx) => {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
@@ -89,7 +79,7 @@ const getCompanyPage = async (ctx) => {
   const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    console.log('is admin');
+    console.log('is admin', email);
     const data = await Settings.getCompanyPage(email);
     data ? ctx.response.body = data : ctx.status = 404;
   } else if (!isAdmin) {
@@ -122,9 +112,36 @@ const updateSettings = async (ctx) => {
   if (isAdmin) {
     const data = await Settings.editSettings(ctx.request.body);
     console.log('data', data);
-    data ? ctx.status = 200 : ctx.status = 418; //charlie.........
+    data ? ctx.status = 200 : ctx.status = 418;
   }
 
+}
+
+const listUsers = async (ctx) => {
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    console.log('admin');
+    const data = await tip.listUsersForAdmin(email, isAdmin);
+    data ? ctx.body = data : ctx.status = 404;
+  } else if (!isAdmin) {
+    console.log('not admin');
+    const data = await tip.listUsersForUser(email, isAdmin);
+    data ? ctx.body = data : ctx.status = 404;
+  } else {
+    ctx.status = 403
+  }
+}
+
+const getAdminTransactions = async (ctx) => {
+  console.log('TRANSACTIO NCONTROLLER');
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const data = await transaction.getAdminTransactions();
+    console.log('a very long list', data);
+  }
+  return data
 }
 
 module.exports = {
@@ -137,5 +154,6 @@ module.exports = {
   updateSettings,
   getCompanyPage,
   getUserInfo,
-  delUser,
+  listUsers,
+  getAdminTransactions,
 }

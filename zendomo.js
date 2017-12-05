@@ -85,7 +85,7 @@ const getAllUsers = async () => {
     })
     .then(res => res.json())
     .then(res => {
-      console.log('<------Users from zendomo------>\n', res)
+      console.log('<------Users from zendomo------>\n')
       return res
     });
     return users;
@@ -175,8 +175,8 @@ const tipUser = async (id, ammount) => {
                 tradeId: response.tradeId,
                 firstName: response.firstName,
                 lastName: response.lastName,
-                tokens: response.tokens,
-                credits: response.credits + ammount
+                tokens: response.tokens + ammount,
+                credits: response.credits
             }),
             mode: 'cors'
         });
@@ -203,6 +203,34 @@ const purchase = async (id, price) => {
                     tradeId: response.tradeId,
                     firstName: response.firstName,
                     lastName: response.lastName,
+                    tokens: response.tokens - price,
+                    credits: response.credits
+                }),
+                mode: 'cors'
+            });
+            success = true;
+        }
+    });
+    return success;
+}
+
+const donation = async (id, price) => {
+    let success= false;
+    const person = await getOneUser(id)
+    .then( response => {
+        if (response.credits >= price) {
+            fetch('http://localhost:3000/api/Trader/' + response.tradeId, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'same-origin',
+                method: 'PUT',
+                body: JSON.stringify({
+                    $class: "org.zendomo.biznet.Trader",
+                    tradeId: response.tradeId,
+                    firstName: response.firstName,
+                    lastName: response.lastName,
                     tokens: response.tokens,
                     credits: response.credits - price
                 }),
@@ -213,6 +241,7 @@ const purchase = async (id, price) => {
     });
     return success;
 }
+
 module.exports = {
     createUser,
     getOneUser,
@@ -222,5 +251,6 @@ module.exports = {
     transferFunds,
     addFunds,
     tipUser,
-    purchase
+    purchase,
+    donation
 }

@@ -5,9 +5,10 @@ const Company = mongoose.model('Companies', Schemas.AdminSchema);
 const User = mongoose.model('Users', Schemas.UserSchema);
 const Domo = require('../zendomo.js');
 const mailer = require('../server/mailer/mailer');
+const Token = mongoose.model('Tokens', Schemas.TokenSchema);
 
 async function addCompany (newCompanyInfo) {
-  console.log('company data', newCompanyInfo);
+  console.log('creating new company...');
   try {
     const company = await Company.find({email: newCompanyInfo.email.toLowerCase()});
     if (!company.length) {
@@ -16,6 +17,11 @@ async function addCompany (newCompanyInfo) {
       newCompany.isAdmin = true;
       newCompany.password = hash;
       await newCompany.save();
+      const newToken = new Token();
+      console.log('newCompany', newCompany.email);
+      newToken.email = newCompany.email;
+      newToken.isAdmin = true;
+      await newToken.save();
       return true;
     } else
       return false;
@@ -25,7 +31,6 @@ async function addCompany (newCompanyInfo) {
 }
 
 async function addUser (companyEmail, userInfo) {
-  console.log('user info', userInfo, 'compan email', companyEmail);
   try {
     const user = await User.find({email: userInfo.email});
     //I check if the user exists in the user collection
@@ -64,7 +69,7 @@ async function editUser (user) {
   }
 }
 
-const delUser = async (companyEmail, userId) => {
+const delUser = async (companyEmail, userId) => { //need to be tested yet
   try {
     let company = new Company();
     company = await Company.findOne({email: company.email});
@@ -84,7 +89,6 @@ const delUser = async (companyEmail, userId) => {
 async function signup (user, urlId) {
   console.log('user', user);
   let oldUserInfo = await User.findOne({email: user.email});
-  console.log('old user info', oldUserInfo);
   if (!oldUserInfo) return null;
   console.log('who is undefined? ', oldUserInfo, urlId);
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
@@ -117,27 +121,24 @@ async function signup (user, urlId) {
   company.usersId.push(newProfile._id);
   const updatedCompany = new Company(company);
   await updatedCompany.save();
+  const newToken = new Token();
+  newToken.email = user.email;
+  newToken.isAdmin = false;
+  console.log('new token created', newToken);
+  await newToken.save();
   return true;
 }
-
-// const getCompanyInfo = async (info) => {
-//   console.log('info received:', info);
-//   try {
-//     const settings = await Company.find({email: info.email});
-//     return (settings) ? settings : false;
-//   } catch (e) {
-//     throw e;
-//   }
-// }
 
 const getCompanyPage = async (companyEmail) => {
   console.log('getting company page...', companyEmail);
   try {
     const companyInfo = await Company.find({email: companyEmail});
+    const userIdList = companyInfo[0].usersId;
+    console.log('list of users', userIdList);
     const financialInfo = await Domo.getAllUsers();
-    console.log('financial info', financialInfo);
+    const userList = userIdList.filter(id => (companyInfo[0].usersId.indexOf(id) !== -1))
     const totalTokens = financialInfo.reduce((acc, user) => {
-      if (user.tradeId !== companyInfo._id) {
+      if (userList.indexOf(user.tradeId) != -1) {
         return acc + user.tokens;
       } else {
         return acc;
@@ -148,7 +149,7 @@ const getCompanyPage = async (companyEmail) => {
       catalogN: companyInfo[0].catalog.length,
       usersIdN: companyInfo[0].usersId.length,
       totalGiven: totalTokens,
-      picture: companyInfo[0].picture,
+      logo: companyInfo[0].logo,
       weeklyAllow: companyInfo[0].weeklyAllow,
       address: companyInfo[0].address,
       isAdmin: true,
@@ -162,7 +163,7 @@ const getCompanyPage = async (companyEmail) => {
 const getUserPage = async (userEmail) => {
   try {
     const userInfo = await User.find({email: userEmail});
-
+    console.log('userinfo', userInfo);
     const financialInfo = await Domo.getOneUser(userInfo[0]._id);
     const panelUserInfo = {
       username: userInfo[0].username,
@@ -228,6 +229,9 @@ const editSettings = async (info) => { //?? have to test this ??//
     throw e;
   }
 }
+
+
+
 
 module.exports = {
   addCompany,

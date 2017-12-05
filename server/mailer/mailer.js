@@ -13,17 +13,16 @@ module.exports = function sendEmail (userData, id, ) {
 
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
+      host: 'smtp.gmail.com',
       port: 587,
       secure: false, // true for 465, false for other ports
       auth: {
-          user: 'yhiwrx5wkxtwdbiy@ethereal.email', // generated ethereal user
-          pass: 'GCREBDFhAfaeKS5Bsa'  // generated ethereal password
+          user: 'zendamaltd@gmail.com', // generated ethereal user
+          pass: 'Z3nd4m4LTD'  // generated ethereal password
       }
     });
 
     // setup email data with unicode symbols
-    console.log('EMAIL ', userData);
     let mailOptions = {
       from: '"Zendama 👻" <no-reply@zendama.com>', // sender address
       to: `${userData.email}`, // list of receivers
@@ -33,7 +32,7 @@ module.exports = function sendEmail (userData, id, ) {
         You received an invitation to join Zendama
         `,
       html: ` Click here to join
-        <a href='http://localhost:3000/usersignup?user-id=${id._id}'>http://localhost:3000/signup-user?user-id=${id._id}</a>
+        <a href='http://localhost:3000/usersignup?user-id=${id._id}'>http://localhost:3000/usersignup?user-id=${id._id}</a>
       `
     };
 
