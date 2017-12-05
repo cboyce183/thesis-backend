@@ -24,8 +24,8 @@ async function addFunds (id, ammount, companyEmail) {
       await company[0].save();
       return true;
   } catch (e) {
-  throw e;
-    }
+    throw e;
+  }
 }
 
 async function transferFunds (senderID, receiverID, ammount) {
@@ -48,8 +48,13 @@ async function tipUser (id, ammount) {
     }
 }
 
+const getAdminTransactions = async () => {
+  return await Domo.getAllUsers();
+}
+
 module.exports = {
     addFunds,
     transferFunds,
-    tipUser
+    tipUser,
+    getAdminTransactions
 }

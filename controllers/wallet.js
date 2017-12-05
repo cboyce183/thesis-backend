@@ -1,5 +1,6 @@
 const Transaction = require('../models/transactions');
 const adminPrivilege = require('../server/auth/usertype');
+const tip = require('../models/tip');
 
 async function addFunds (ctx) {
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
@@ -13,8 +14,10 @@ async function transferFunds (ctx) {
 }
 
 async function tipUser (ctx) {
-    const data = await Transaction.tipUser(ctx.request.body.id, ctx.request.body.amount, ctx.request.motive);
-    data ? ctx.status = 200 : ctx.body = 'Transaction failed';
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+
+  const data = await tip.tipUser(ctx.request.body.id, ctx.request.body.amount, ctx.request.body.reason, email)
+  data ? ctx.status = 200 : ctx.body = 'Transaction failed';
 }
 
 module.exports = {

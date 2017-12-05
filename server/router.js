@@ -22,6 +22,7 @@ router.get('/company', company.getCompanyPage);
 router.get('/settings', company.getSettings);
 router.get('/user', company.getUserInfo);
 router.get('/tip', company.listUsers);
+router.get('/admin-transactions', company.getAdminTransactions);
 router.get('/login', async (next) => {
   await authenticate(next);
 });

@@ -4,6 +4,7 @@ const adminPrivilege = require('../server/auth/usertype');
 const Settings = require('../models/insertdata');
 const check = require('./common.js');
 const tip = require('../models/tip');
+const transaction = require('../models/transactions');
 const addCompany = async (ctx) => {
 
   const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
@@ -130,7 +131,17 @@ const listUsers = async (ctx) => {
   } else {
     ctx.status = 403
   }
+}
 
+const getAdminTransactions = async (ctx) => {
+  console.log('TRANSACTIO NCONTROLLER');
+  const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
+  const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  if (isAdmin) {
+    const data = await transaction.getAdminTransactions();
+    console.log('a very long list', data);
+  }
+  return data
 }
 
 module.exports = {
@@ -144,4 +155,5 @@ module.exports = {
   getCompanyPage,
   getUserInfo,
   listUsers,
+  getAdminTransactions,
 }
