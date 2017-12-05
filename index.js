@@ -10,15 +10,16 @@ const koaJwt = require('koa-jwt');
 const db = require('./config');
 
 app
+  .use(cors())
   .use(logger())
   .use(bodyParser())
-  .use(cors())
   .use(koaJwt({secret: 'xxx'})
     .unless({path: [
       '/',
       '/login',
       new RegExp('\/signup-user.*','i'),
       '/favicon.ico',
+      '/signupcompany',
     ]}))
   .use(router.routes())
   .listen(4200);

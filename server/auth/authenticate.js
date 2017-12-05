@@ -34,15 +34,16 @@ module.exports = async function (ctx) {
 }
 
 async function sign (authenticated, ctx, email, admin) {
-  console.log('auth?', authenticated);
+  console.log('authentication:', authenticated);
     if (authenticated) {
-      // I send the token in the body
+      //I send the token in the body
       const token = ctx.body = {
         token: jwt.sign({email: email }, 'xxx'),
       }
       //I check if the token already exist in the db
       //and I check whether the user is an admin or not
       const isToken = await Token.find({email: email});
+      console.log('is token', isToken);
       isToken[0].token = token.token;
       await isToken[0].save();
       if (isToken.length) {
@@ -58,6 +59,7 @@ async function sign (authenticated, ctx, email, admin) {
         };
       } else {
         //I save the token into the db
+        console.log('a new token has been created...', token.token);
         const newToken = new Token();
         newToken.token = token.token;
         newToken.email = email;
