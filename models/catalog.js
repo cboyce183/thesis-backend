@@ -4,7 +4,7 @@ const Company = mongoose.model('Companies', Schemas.AdminSchema);
 const User = mongoose.model('Users', Schemas.UserSchema);
 const Catalog = mongoose.model('Catalog', Schemas.CatalogSchema);
 const Domo = require('../zendomo.js');
-
+const history = require('./history');
 
 const add = async (product, companyEmail, isService) => {
   console.log('add item', product, companyEmail, isService);
@@ -20,13 +20,20 @@ const add = async (product, companyEmail, isService) => {
   await company[0].save();
 }
 
-const buy = async (userEmail, idItem, infoProduct) => { //Need to be tested
-  console.log('USER BUYING', userEmail, idItem, infoProduct);
+const buy = async (userEmail, idItem, infoProduct) => {
   const user = await User.find({email: userEmail});
-  console.log('user', user);
   await Domo.purchase(user[0]._id, infoProduct.price);
-  //Need to send an email to the admin
-  //now store arguments
+  const receiverInfo = await Company.find({email: user[0].company})
+  const senderInfo = await User.find({email: userEmail});
+  const receiver = receiverInfo[0];
+  const sender = senderInfo[0];
+  const financialReceiver = await Domo.getOneUser(receiver._id);
+  const financialSender = await Domo.getOneUser(sender._id);
+  const response = history.history(receiver, sender, infoProduct.price, 'UserSpent', infoProduct.name, user[0].company, financialSender, financialReceiver);
+  console.log('response historty', response);
+  ///////
+  const addTransaction = await history.saveHistory(response, sender.company);
+  console.log('TRANSACTION', addTransaction);
 }
 
 const del = async (companyEmail, companyId) => {

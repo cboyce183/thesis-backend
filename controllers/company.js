@@ -5,6 +5,7 @@ const Settings = require('../models/insertdata');
 const check = require('./common.js');
 const tip = require('../models/tip');
 const transaction = require('../models/transactions');
+const history = require('../models/history');
 const addCompany = async (ctx) => {
 
   const res = await Settings.addCompany(ctx.request.body); //ctx.request.body
@@ -134,14 +135,31 @@ const listUsers = async (ctx) => {
 }
 
 const getAdminTransactions = async (ctx) => {
-  console.log('TRANSACTIO NCONTROLLER');
   const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    const data = await transaction.getAdminTransactions();
-    console.log('a very long list', data);
+    ctx.body = await history.getHistory(email, isAdmin);
+    ctx.status = 200;
+  } else if (!isAdmin) {
+    const fullHistory = await history.getUserHistory(email);
+    console.log('FULL HISTORY', fullHistory);
+    const filteredHistory = userHistory(fullHistory);
+    console.log('FILTER HISTORY', filteredHistory);
+    ctx.body = {
+      recentTransactions: filteredHistory,
+      userToUserCompTotal: null,
+      userSpentCompTotal: null,
+    };
+    ctx.status = 200;
+  } else {
+    ctx.status = 403;
   }
-  return data
+}
+
+const userHistory = (fullHistory) => {
+  return fullHistory.history.filter ((transaction) => {
+    return transaction.from.id == fullHistory.user.id || transaction.to.id == fullHistory.user.id;
+  })
 }
 
 module.exports = {

@@ -175,7 +175,7 @@ const tipUser = async (id, ammount) => {
                 tradeId: response.tradeId,
                 firstName: response.firstName,
                 lastName: response.lastName,
-                tokens: response.tokens + ammount,
+                tokens: response.tokens + parseInt(ammount),
                 credits: response.credits
             }),
             mode: 'cors'

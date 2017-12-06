@@ -47,6 +47,7 @@ const listUsersForAdmin = async (companyEmail, isAdmin) => {
 }
 
 const tipUser = async (idReceiver, amount, reason, emailSender) => {
+  console.log('TIPPING USER');
   const company = await Company.find({email: emailSender});
   let user = new User();
   if (!company.length) { //not an admin
@@ -56,16 +57,25 @@ const tipUser = async (idReceiver, amount, reason, emailSender) => {
     const data = await Domo.donation(senderInfo[0]._id, amount);
     if (!user.length) console.error('good luck');
     const receiverInfo = await User.find({_id: idReceiver})
-
-    //
     const receiver = receiverInfo[0];
     const sender = senderInfo[0];
-    const response = history.history(receiver, sender, amount, 'UserToUser', reason, senderInfo[0].company);
+    const financialReceiver = await Domo.getOneUser(receiver._id);
+    const financialSender = await Domo.getOneUser(sender._id);
+    console.log('FINANCIAL USER', financialSender, financialReceiver);
+    const response = history.history(receiver, sender, amount, 'UserToUser', reason, senderInfo[0].company, financialSender, financialReceiver);
     const addTransaction = await history.saveHistory(response, senderInfo[0].company)
-    console.log('RESPON', response, '------', addTransaction);
-    //
   } else if (company.length) {
     await Transaction.tipUser(idReceiver, amount);
+    // can be refactored, same code repeated
+    const receiverInfo = await User.find({_id: idReceiver})
+    const senderInfo = await Company.find({email: emailSender});
+    const receiver = receiverInfo[0];
+    const sender = senderInfo[0];
+    const financialReceiver = await Domo.getOneUser(receiver._id);
+    const financialSender = await Domo.getOneUser(sender._id);
+    const response = history.history(receiver, sender, amount, 'AdminExpense', reason, senderInfo[0].company, financialSender, financialReceiver);
+    const addTransaction = await history.saveHistory(response, senderInfo[0].email)
+    //
   } else {
     ctx.status = 404;
   }
