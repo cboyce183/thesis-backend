@@ -4,7 +4,7 @@ const Company = mongoose.model('Companies', Schemas.AdminSchema);
 const User = mongoose.model('Users', Schemas.UserSchema);
 const Domo = require('../zendomo.js');
 const Transaction = require('../models/transactions');
-
+const history = require('./history');
 
 const listUsersForUser = async (companyEmail, isAdmin) => {
     var user = await User.find({email: companyEmail});
@@ -49,15 +49,21 @@ const listUsersForAdmin = async (companyEmail, isAdmin) => {
 const tipUser = async (idReceiver, amount, reason, emailSender) => {
   const company = await Company.find({email: emailSender});
   let user = new User();
-  console.log('COMPANY', company);
   if (!company.length) { //not an admin
     user = await User.find({email: emailSender})
     await Transaction.tipUser(idReceiver, amount);
-    const idSender = await sender(emailSender);
-    console.log('ID USER', idSender, 'amount', amount);
-    const data = await Domo.donation(idSender, amount);
-    console.log('DATA', data);
+    const senderInfo = await User.find({email: emailSender});
+    const data = await Domo.donation(senderInfo[0]._id, amount);
     if (!user.length) console.error('good luck');
+    const receiverInfo = await User.find({_id: idReceiver})
+
+    //
+    const receiver = receiverInfo[0];
+    const sender = senderInfo[0];
+    const response = history.history(receiver, sender, amount, 'UserToUser', reason, senderInfo[0].company);
+    const addTransaction = await history.saveHistory(response, senderInfo[0].company)
+    console.log('RESPON', response, '------', addTransaction);
+    //
   } else if (company.length) {
     await Transaction.tipUser(idReceiver, amount);
   } else {
@@ -66,15 +72,15 @@ const tipUser = async (idReceiver, amount, reason, emailSender) => {
 
 }
 
-const sender = async (emailSender) => {
-  const company = await Company.find({email: emailSender});
-  let user = new User();
-  if (!company.length) {
-    user = await User.find({email: emailSender});
-  }
-  console.log('USER', user);
-  return user[0]._id;
-}
+// const sender = async (emailSender) => {
+//   const company = await Company.find({email: emailSender});
+//   let user = new User();
+//   if (!company.length) {
+//     user = await User.find({email: emailSender});
+//   }
+//   console.log('USER', user);
+//   return user[0]._id;
+// }
 
 module.exports = {
   listUsersForAdmin,

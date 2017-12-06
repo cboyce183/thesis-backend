@@ -45,16 +45,7 @@ const AdminSchema = mongoose.Schema({
   createdOn: Number, //timestamp ??????????????????? what
   address: String,
   color: {},
-  history:
-    [
-      {
-        from: {},
-        to: {},
-        amount: Number,
-        transactionType: String,
-        date: Date,
-      }
-    ]
+  history: [ ]
 });
 
 const TokenSchema = mongoose.Schema({
