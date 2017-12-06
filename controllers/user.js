@@ -21,6 +21,7 @@ const buyItem = async (ctx) => {
   const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (!isAdmin) {
+    console.log('a user is buying...');
     const res = await catalog.buy(userEmail, urlId, ctx.request.body);
     (res) ? ctx.status = 201 : ctx.body = 'ops... something went wrong';
   } else {

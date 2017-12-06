@@ -31,7 +31,7 @@ router.get('/login', async (next) => {
 router.put('/company', company.updateSettings);
 router.put('/user', user.edit);
 router.put('/tip', wallet.tipUser);
-router.put('/transfer', wallet.transferFunds);
+//router.put('/transfer', wallet.transferFunds); //we do not use it
 router.put('/admin-fund', wallet.addFunds);
 router.put('/catalog', company.editItem);
 
