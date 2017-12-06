@@ -18,7 +18,7 @@ const createUser = async (id, firstName, lastName) => {
             firstName: firstName,
             lastName: lastName,
             tokens: 0,
-            credits: 0
+            credits: 50
         }),
         mode: 'cors'
     })
@@ -190,7 +190,8 @@ const purchase = async (id, price) => {
     let success= false;
     const person = await getOneUser(id)
     .then( response => {
-        if (response.credits >= price) {
+        if (response.tokens >= price) {
+          console.log('blockchain', response.credits);
             fetch('http://localhost:3000/api/Trader/' + response.tradeId, {
                 headers: {
                     'Accept': 'application/json',

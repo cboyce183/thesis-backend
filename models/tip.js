@@ -34,6 +34,7 @@ const listUsersForAdmin = async (companyEmail, isAdmin) => {
   company = await Company.find({email: companyEmail});
   for (let i = 0; i < company[0].usersId.length; i++) {
     const user = await User.find({_id: company[0].usersId[i]});
+    console.log('====== USER INFO', user, '==========');
     if (!user[0]) return {users: []};
     const userInfo = {
       img: user[0].profilePic,
@@ -51,7 +52,6 @@ const tipUser = async (idReceiver, amount, reason, emailSender) => {
   console.log('COMPANY', company);
   if (!company.length) { //not an admin
     user = await User.find({email: emailSender})
-    console.log('WALLET', idReceiver, amount, reason, emailSender);
     await Transaction.tipUser(idReceiver, amount);
     const idSender = await sender(emailSender);
     console.log('ID USER', idSender, 'amount', amount);

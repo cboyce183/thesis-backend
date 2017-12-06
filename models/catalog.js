@@ -21,10 +21,10 @@ const add = async (product, companyEmail, isService) => {
 }
 
 const buy = async (userEmail, idItem, infoProduct) => { //Need to be tested
-  console.log(userEmail, idItem, infoProduct);
+  console.log('USER BUYING', userEmail, idItem, infoProduct);
   const user = await User.find({email: userEmail});
   console.log('user', user);
-  Domo.purchase(user[0]._id, infoProduct.price);
+  await Domo.purchase(user[0]._id, infoProduct.price);
   //Need to send an email to the admin
   //now store arguments
 }
