@@ -4,10 +4,9 @@ const adminPrivilege = require('../server/auth/usertype');
 const catalog = require('../models/catalog');
 
 const add = async (ctx) => {
-  console.log('controller, adding a user...');
+  console.log('======LOGGER, adding a user...');
   const companyEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
-  console.log('isAdmin?', isAdmin, companyEmail);
   if (isAdmin) {
     const res = await setUser.addUser(companyEmail, ctx.request.body)
     return (res) ? ctx.status = 200 : ctx.status = 409;
@@ -21,7 +20,7 @@ const buyItem = async (ctx) => {
   const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (!isAdmin) {
-    console.log('a user is buying...');
+    console.log('======LOGGER a user is buying...');
     const res = await catalog.buy(userEmail, urlId, ctx.request.body);
     (res) ? ctx.status = 201 : ctx.body = 'ops... something went wrong';
   } else {
@@ -48,7 +47,6 @@ const edit = async (ctx) => {
 const signup = async (ctx) => {
   const userId = ctx.request.query;
   const data = await setUser.signup(ctx.request.body, userId); // to be replaced with ctx.request.body
-  console.log('data', data);
   if (!data) {
     ctx.status = 401;
   } else {

@@ -24,9 +24,9 @@ module.exports = function sendEmail (userData, id, ) {
 
     // setup email data with unicode symbols
     let mailOptions = {
-      from: '"Zendama 👻" <no-reply@zendama.com>', // sender address
+      from: '"Zendama 💰" <no-reply@zendama.com>', // sender address
       to: `${userData.email}`, // list of receivers
-      subject: 'NAMEOFTHECOMPANY added you ✔', // Subject line
+      subject: 'You\'ve been invited to join Zendama ✔', // Subject line
       text: `
         Hello ${userData.name},
         You received an invitation to join Zendama

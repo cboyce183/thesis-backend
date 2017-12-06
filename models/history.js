@@ -33,9 +33,7 @@ const history = (receiver, sender, amount, transactionType, reason, companyEmail
 }
 
 const saveHistory = async (history, companyEmail) => {
-  console.log('COMPANY EMAIL', companyEmail);
   const company = await Company.find({email: companyEmail});
-  console.log('COMPANY',company, companyEmail);
   company[0].history.push(history);
   await company[0].save();
   return true;
@@ -55,7 +53,7 @@ const getHistory = async (email, isAdmin) => {
       transactions: user[0].history,
     }
   } else {
-    console.error('There is a problem with isAdmin:', isAdmin);
+    ctx.status = 403;
   }
 }
 

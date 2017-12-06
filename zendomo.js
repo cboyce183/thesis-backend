@@ -216,6 +216,7 @@ const purchase = async (id, price) => {
 }
 
 const donation = async (id, price) => {
+    console.log('PRICE', price, typeof price);
     let success= false;
     const person = await getOneUser(id)
     .then( response => {

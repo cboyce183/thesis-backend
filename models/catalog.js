@@ -7,11 +7,11 @@ const Domo = require('../zendomo.js');
 const history = require('./history');
 
 const add = async (product, companyEmail, isService) => {
-  console.log('add item', product, companyEmail, isService);
   let company = new Company(); //I need to check if I really need this
   company = await Company.find({email: companyEmail});
   let newProduct = new Catalog();
   newProduct = product;
+  newProduct.picture = await sendToAWS(product.picture,product.name);
   newProduct.isService = isService;
   if (!newProduct.isService) {
     newProduct.schedule = null;
@@ -30,10 +30,8 @@ const buy = async (userEmail, idItem, infoProduct) => {
   const financialReceiver = await Domo.getOneUser(receiver._id);
   const financialSender = await Domo.getOneUser(sender._id);
   const response = history.history(receiver, sender, infoProduct.price, 'UserSpent', infoProduct.name, user[0].company, financialSender, financialReceiver);
-  console.log('response historty', response);
-  ///////
   const addTransaction = await history.saveHistory(response, sender.company);
-  console.log('TRANSACTION', addTransaction);
+  console.log('======LOGGER \n product bought', addTransaction, '\n======');
 }
 
 const del = async (companyEmail, companyId) => {

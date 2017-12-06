@@ -34,7 +34,6 @@ const listUsersForAdmin = async (companyEmail, isAdmin) => {
   company = await Company.find({email: companyEmail});
   for (let i = 0; i < company[0].usersId.length; i++) {
     const user = await User.find({_id: company[0].usersId[i]});
-    console.log('====== USER INFO', user, '==========');
     if (!user[0]) return {users: []};
     const userInfo = {
       img: user[0].profilePic,
@@ -47,21 +46,21 @@ const listUsersForAdmin = async (companyEmail, isAdmin) => {
 }
 
 const tipUser = async (idReceiver, amount, reason, emailSender) => {
-  console.log('TIPPING USER');
   const company = await Company.find({email: emailSender});
   let user = new User();
   if (!company.length) { //not an admin
     user = await User.find({email: emailSender})
-    await Transaction.tipUser(idReceiver, amount);
+    await Transaction.tipUser(idReceiver, amount, user[0]._id);
     const senderInfo = await User.find({email: emailSender});
     const data = await Domo.donation(senderInfo[0]._id, amount);
-    if (!user.length) console.error('good luck');
+
+    if (!user.length) console.log('good luck');
     const receiverInfo = await User.find({_id: idReceiver})
     const receiver = receiverInfo[0];
     const sender = senderInfo[0];
     const financialReceiver = await Domo.getOneUser(receiver._id);
     const financialSender = await Domo.getOneUser(sender._id);
-    console.log('FINANCIAL USER', financialSender, financialReceiver);
+    console.log('======LOGGER\n', financialSender.firstName, ' has just tipped', financialReceiver.firstName, amount, 'zen');
     const response = history.history(receiver, sender, amount, 'UserToUser', reason, senderInfo[0].company, financialSender, financialReceiver);
     const addTransaction = await history.saveHistory(response, senderInfo[0].company)
   } else if (company.length) {
@@ -81,16 +80,6 @@ const tipUser = async (idReceiver, amount, reason, emailSender) => {
   }
 
 }
-
-// const sender = async (emailSender) => {
-//   const company = await Company.find({email: emailSender});
-//   let user = new User();
-//   if (!company.length) {
-//     user = await User.find({email: emailSender});
-//   }
-//   console.log('USER', user);
-//   return user[0]._id;
-// }
 
 module.exports = {
   listUsersForAdmin,

@@ -6,6 +6,7 @@ const User = mongoose.model('Users', Schemas.UserSchema);
 const Domo = require('../zendomo.js');
 const mailer = require('../server/mailer/mailer');
 const Token = mongoose.model('Tokens', Schemas.TokenSchema);
+const sendToAWS = require('./aws.js')
 
 async function addCompany (newCompanyInfo) {
   console.log('creating new company...');
@@ -16,9 +17,10 @@ async function addCompany (newCompanyInfo) {
       const hash = bcrypt.hashSync(newCompanyInfo.password, 10);
       newCompany.isAdmin = true;
       newCompany.password = hash;
+      newCompany.logo = await sendToAWS(newCompanyInfo.logo, newCompany.name);
       await newCompany.save();
       const newToken = new Token();
-      console.log('newCompany', newCompany.email);
+      console.log('======LOGGER new company created:', newCompany.email);
       newToken.email = newCompany.email;
       newToken.isAdmin = true;
       await newToken.save();
@@ -31,6 +33,7 @@ async function addCompany (newCompanyInfo) {
 }
 
 async function addUser (companyEmail, userInfo) {
+  console.log('======LOGGER\n', companyEmail, 'added a new user', '\n======');
   try {
     const user = await User.find({email: userInfo.email});
     //I check if the user exists in the user collection
@@ -87,10 +90,8 @@ const delUser = async (companyEmail, userId) => { //need to be tested yet
 }
 
 async function signup (user, urlId) {
-  console.log('user', user);
   let oldUserInfo = await User.findOne({email: user.email});
   if (!oldUserInfo) return null;
-  console.log('who is undefined? ', oldUserInfo, urlId);
   if (oldUserInfo['_id'].toString() !== urlId['user-id'].toString()) {
     return false;
   }
@@ -102,7 +103,7 @@ async function signup (user, urlId) {
   newProfile.firstName = user.firstName;
   newProfile.username = user.username;
   newProfile.password = bcrypt.hashSync(user.password, 10);
-  newProfile.profilePic = user.profilePic;
+  newProfile.profilePic = await sendToAWS(user.profilePic, user.username);
   newProfile.hashkey = null;
   newProfile.isAdmin = false;
   newProfile.lastName = user.lastName;
@@ -114,27 +115,21 @@ async function signup (user, urlId) {
   //I want to add the id of the user in the company db only after we are
   //sure that the user has successfully signed up
   //I look for the company where we want the user to be added and I push his id
-  console.log('new profile', newProfile);
   const company = await Company.findOne({email: oldUserInfo.company}, 'usersId'); //newUser.company
-  console.log('company found', company);
-  console.log('saving this id', newProfile._id);
   company.usersId.push(newProfile._id);
   const updatedCompany = new Company(company);
   await updatedCompany.save();
   const newToken = new Token();
   newToken.email = user.email;
   newToken.isAdmin = false;
-  console.log('new token created', newToken);
   await newToken.save();
   return true;
 }
 
 const getCompanyPage = async (companyEmail) => {
-  console.log('getting company page...', companyEmail);
   try {
     const companyInfo = await Company.find({email: companyEmail});
     const userIdList = companyInfo[0].usersId;
-    console.log('list of users', userIdList);
     const financialInfo = await Domo.getAllUsers();
     const userList = userIdList.filter(id => (companyInfo[0].usersId.indexOf(id) !== -1))
     const totalTokens = financialInfo.reduce((acc, user) => {
@@ -163,7 +158,6 @@ const getCompanyPage = async (companyEmail) => {
 const getUserPage = async (userEmail) => {
   try {
     const userInfo = await User.find({email: userEmail});
-    console.log('userinfo', userInfo);
     const financialInfo = await Domo.getOneUser(userInfo[0]._id);
     const panelUserInfo = {
       username: userInfo[0].username,

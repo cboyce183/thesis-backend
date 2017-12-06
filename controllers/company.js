@@ -61,9 +61,9 @@ const editItem = async (ctx) => {
 }
 
 const getItems = async (ctx) => {
-  console.log('in controller getting items');
   const userEmail = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
+  console.log('======LOGGER\n', userEmail, 'is retrieving the list of items', '\n======');
 
   if (isAdmin) {
     ctx.status = 201;
@@ -79,14 +79,14 @@ const getItems = async (ctx) => {
 const getCompanyPage = async (ctx) => {
   const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
-  if (isAdmin) {
-    console.log('is admin', email);
+  console.log('======LOGGER\n', email, 'requested company page\n admin status:', isAdmin,'\n======');
+  if (isAdmin === 'not found') {
+    return ctx.status = 403;
+  } else if (isAdmin) {
     const data = await Settings.getCompanyPage(email);
     data ? ctx.response.body = data : ctx.status = 404;
   } else if (!isAdmin) {
-    console.log('not admin', email);
     const data = await Settings.getUserPage(email);
-    console.log('data',data);
     data ? ctx.response.body = data : ctx.status = 404;
   }
 }
@@ -112,7 +112,6 @@ const updateSettings = async (ctx) => {
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
     const data = await Settings.editSettings(ctx.request.body);
-    console.log('data', data);
     data ? ctx.status = 200 : ctx.status = 418;
   }
 
@@ -122,15 +121,11 @@ const listUsers = async (ctx) => {
   const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
-    console.log('admin');
     const data = await tip.listUsersForAdmin(email, isAdmin);
     data ? ctx.body = data : ctx.status = 404;
   } else if (!isAdmin) {
-    console.log('not admin');
     const data = await tip.listUsersForUser(email, isAdmin);
     data ? ctx.body = data : ctx.status = 404;
-  } else {
-    ctx.status = 403
   }
 }
 
@@ -142,24 +137,30 @@ const getAdminTransactions = async (ctx) => {
     ctx.status = 200;
   } else if (!isAdmin) {
     const fullHistory = await history.getUserHistory(email);
-    console.log('FULL HISTORY', fullHistory);
+
     const filteredHistory = userHistory(fullHistory);
-    console.log('FILTER HISTORY', filteredHistory);
-    ctx.body = {
+    const transactionsInfo = {
       recentTransactions: filteredHistory,
-      userToUserCompTotal: null,
-      userSpentCompTotal: null,
+      userToUserCompTotal: companyTotal(filteredHistory, 'UserToUser'),
+      userSpentCompTotal: companyTotal(filteredHistory, 'UserSpent'),
     };
+    ctx.body = transactionsInfo;
     ctx.status = 200;
-  } else {
-    ctx.status = 403;
   }
+}
+
+const companyTotal = (filteredHistory, type) => {
+  return filteredHistory.filter (transaction => {
+    return transaction.type == type;
+  }).reduce ((acc, transaction) =>{
+    return acc + parseInt(transaction.amount);
+  }, 0);
 }
 
 const userHistory = (fullHistory) => {
   return fullHistory.history.filter ((transaction) => {
     return transaction.from.id == fullHistory.user.id || transaction.to.id == fullHistory.user.id;
-  })
+  });
 }
 
 module.exports = {
