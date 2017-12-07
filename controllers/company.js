@@ -121,9 +121,11 @@ const listUsers = async (ctx) => {
   const email = await adminPrivilege.userEmail(ctx.headers.authorization.slice(7));
   const isAdmin = await adminPrivilege.checkUserType(ctx.headers.authorization.slice(7));
   if (isAdmin) {
+    console.log('ADMIN');
     const data = await tip.listUsersForAdmin(email, isAdmin);
     data ? ctx.body = data : ctx.status = 404;
   } else if (!isAdmin) {
+    console.log('NOT ADMIN');
     const data = await tip.listUsersForUser(email, isAdmin);
     data ? ctx.body = data : ctx.status = 404;
   }
@@ -137,12 +139,11 @@ const getAdminTransactions = async (ctx) => {
     ctx.status = 200;
   } else if (!isAdmin) {
     const fullHistory = await history.getUserHistory(email);
-
     const filteredHistory = userHistory(fullHistory);
     const transactionsInfo = {
       recentTransactions: filteredHistory,
-      userToUserCompTotal: companyTotal(filteredHistory, 'UserToUser'),
-      userSpentCompTotal: companyTotal(filteredHistory, 'UserSpent'),
+      userToUserCompTotal: companyTotal(fullHistory.history, 'UserToUser'),
+      userSpentCompTotal: companyTotal(fullHistory.history, 'UserSpent'),
     };
     ctx.body = transactionsInfo;
     ctx.status = 200;
@@ -152,8 +153,8 @@ const getAdminTransactions = async (ctx) => {
 const companyTotal = (filteredHistory, type) => {
   return filteredHistory.filter (transaction => {
     return transaction.type == type;
-  }).reduce ((acc, transaction) =>{
-    return acc + parseInt(transaction.amount);
+  }).reduce ((acc, transaction) => {
+    return Number(acc) + Number(transaction.amount);
   }, 0);
 }
 

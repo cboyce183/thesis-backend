@@ -115,9 +115,11 @@ async function signup (user, urlId) {
   //I want to add the id of the user in the company db only after we are
   //sure that the user has successfully signed up
   //I look for the company where we want the user to be added and I push his id
-  const company = await Company.findOne({email: oldUserInfo.company}, 'usersId'); //newUser.company
+  const company = await Company.findOne({email: oldUserInfo.company}); //newUser.company
+  console.log('COMPANY CONST CREATED', company);
   company.usersId.push(newProfile._id);
   const updatedCompany = new Company(company);
+  console.log('UPDATED COMPANY, this is gonna be saved', updatedCompany);
   await updatedCompany.save();
   const newToken = new Token();
   newToken.email = user.email;

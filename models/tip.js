@@ -52,13 +52,15 @@ const tipUser = async (idReceiver, amount, reason, emailSender) => {
     user = await User.find({email: emailSender})
     await Transaction.tipUser(idReceiver, amount, user[0]._id);
     const senderInfo = await User.find({email: emailSender});
+    console.log('========= HERE');
     const data = await Domo.donation(senderInfo[0]._id, amount);
-
+    console.log('DATA=======', data);
     if (!user.length) console.log('good luck');
     const receiverInfo = await User.find({_id: idReceiver})
     const receiver = receiverInfo[0];
     const sender = senderInfo[0];
     const financialReceiver = await Domo.getOneUser(receiver._id);
+    console.log('FINANCIAL RECEIVER', financialReceiver, 'RECEIVER', receiver._id);
     const financialSender = await Domo.getOneUser(sender._id);
     console.log('======LOGGER\n', financialSender.firstName, ' has just tipped', financialReceiver.firstName, amount, 'zen');
     const response = history.history(receiver, sender, amount, 'UserToUser', reason, senderInfo[0].company, financialSender, financialReceiver);
