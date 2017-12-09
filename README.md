@@ -1,5 +1,5 @@
 # thesis-backend
-Thesis project backend - express - mongo - Hyperledger
+Thesis project backend - Koa - mongo - Hyperledger
 
 ## API
 
