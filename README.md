@@ -1,11 +1,7 @@
 # thesis-backend
-Thesis project backend - express &amp; cassandra
-
-Jack, what did I tell you - never read the read me
+Thesis project backend - express - mongo - Hyperledger
 
 ## API
-
-
 
 | Method | Where                 | Request                                  | Response                                 |
 | ------ | --------------------- | ---------------------------------------- | ---------------------------------------- |
